@@ -1,6 +1,6 @@
 package dev.schmarrn.lighty.mixin;
 
-import dev.schmarrn.lighty.LightyLevelListener;
+import dev.schmarrn.lighty.LightyWorldEventListener;
 import dev.schmarrn.lighty.event.Compute;
 import dev.schmarrn.lighty.event.KeyBind;
 import net.minecraft.client.Minecraft;
@@ -36,6 +36,6 @@ public abstract class MinecraftMixin {
 	@Inject(method = "changeWorld(Lnet/minecraft/client/world/WorldClient;Ljava/lang/String;Lnet/minecraft/core/entity/player/Player;)V", at = @At("TAIL"))
 	private void lighty$registerOnLightUpdateHandler(WorldClient world, String loadingTitle, Player player, CallbackInfo ci) {
 		if (currentWorld != null)
-			currentWorld.listeners.add(new LightyLevelListener());
+			currentWorld.listeners.add(new LightyWorldEventListener());
 	}
 }

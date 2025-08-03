@@ -4,7 +4,7 @@ import dev.schmarrn.lighty.Lighty;
 import dev.schmarrn.lighty.config.Config;
 import dev.schmarrn.lighty.event.Compute;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.gui.Screen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.options.ScreenOptions;
 import net.minecraft.client.gui.options.components.OptionsCategory;
 import net.minecraft.client.gui.options.components.OptionsComponent;

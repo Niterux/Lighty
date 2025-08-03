@@ -4,6 +4,7 @@
   "package": "dev.schmarrn.lighty.mixin",
   "compatibilityLevel": "JAVA_8",
   "client": [
+    "accessors.MinecraftInstanceAccessor",
     "MinecraftMixin",
     "ScreenOptionsMixin",
     "WorldRendererMixin"

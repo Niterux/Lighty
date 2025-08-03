@@ -1,8 +1,8 @@
 package dev.schmarrn.lighty;
 
 import dev.schmarrn.lighty.ui.LightyConfigScreen;
-import io.github.prospector.modmenu.api.ModMenuApi;
-import net.minecraft.client.gui.Screen;
+import com.terraformersmc.modmenu.api.ModMenuApi;
+import net.minecraft.client.gui.screen.Screen;
 
 import java.util.function.Function;
 
