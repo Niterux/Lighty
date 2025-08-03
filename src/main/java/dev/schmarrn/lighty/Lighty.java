@@ -9,19 +9,20 @@ import dev.schmarrn.lighty.mode.CarpetMode;
 import dev.schmarrn.lighty.mode.CrossMode;
 import dev.schmarrn.lighty.mode.NumberMode;
 import dev.schmarrn.lighty.ui.LightyConfigScreen;
-import net.fabricmc.api.ClientModInitializer;
+import net.minecraft.client.Minecraft;
+import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
+import net.ornithemc.osl.lifecycle.api.MinecraftEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import turniplabs.halplibe.util.ClientStartEntrypoint;
 
 
-public class Lighty implements ClientModInitializer, ClientStartEntrypoint {
+public class Lighty implements ClientModInitializer {
     public static final String MOD_ID = "lighty";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	@Override
-	public void onInitializeClient() {
+	public void initClient() {
 		LOGGER.info("Let there be {}", MOD_ID);
 
 		Config.init();
@@ -36,13 +37,10 @@ public class Lighty implements ClientModInitializer, ClientStartEntrypoint {
 		FabricLoader.getInstance().getEntrypoints("lightyModesRegistration", LightyModesRegistration.class).forEach(LightyModesRegistration::registerLightyModes);
 
 		ModeLoader.setLastUsedMode();
+		MinecraftEvents.READY.register(this::afterClientStart);
 	}
 
-	@Override
-	public void beforeClientStart() { }
-
-	@Override
-	public void afterClientStart() {
+	public void afterClientStart(Minecraft minecraft) {
 		KeyBind.register();
 		LightyConfigScreen.register();
 	}

@@ -10,8 +10,12 @@ pluginManagement {
 			url = uri("https://jitpack.io")
 		}
 		maven {
-			name = "Babric"
-			url = uri("https://maven.glass-launcher.net/babric")
+			name = "Ornithe Releases"
+			url = uri("https://maven.ornithemc.net/releases")
+		}
+		maven {
+			name = "Ornithe Snapshots"
+			url = uri("https://maven.ornithemc.net/snapshots")
 		}
 		maven {
 			name = "SignalumMavenInfrastructure"
