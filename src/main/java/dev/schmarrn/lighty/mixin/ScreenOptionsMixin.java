@@ -3,8 +3,8 @@ package dev.schmarrn.lighty.mixin;
 import dev.schmarrn.lighty.ui.LightyConfigScreen;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.options.ScreenOptions;
-import net.minecraft.client.gui.options.data.OptionsPage;
-import net.minecraft.client.gui.options.data.OptionsPageRegistry;
+import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.GameOptionsRegistry;
 import net.minecraft.client.render.Font;
 import net.minecraft.core.lang.I18n;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,7 +23,7 @@ public abstract class ScreenOptionsMixin extends Screen {
 	}
 
 	@Unique
-	private List<OptionsPage> redirect(OptionsPageRegistry instance) {
+	private List<GameOptions> redirect(GameOptionsRegistry instance) {
 		if (isLightyScreen()) {
 			return LightyConfigScreen.getPages();
 		} else {
@@ -42,10 +42,10 @@ public abstract class ScreenOptionsMixin extends Screen {
 		method = "drawPagesListItems",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/options/data/OptionsPageRegistry;getPages()Ljava/util/List;"
+			target = "Lnet.minecraft.client.options.GameOptionsRegistry;getPages()Ljava/util/List;"
 		)
 	)
-	private List<OptionsPage> lighty$redirectPages$drawPagesListItems(OptionsPageRegistry instance) {
+	private List<GameOptions> lighty$redirectPages$drawPagesListItems(GameOptionsRegistry instance) {
 		return redirect(instance);
 	}
 
@@ -53,10 +53,10 @@ public abstract class ScreenOptionsMixin extends Screen {
 		method = "getTotalPagesListHeight",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/options/data/OptionsPageRegistry;getPages()Ljava/util/List;"
+			target = "Lnet.minecraft.client.options.GameOptionsRegistry;getPages()Ljava/util/List;"
 		)
 	)
-	private List<OptionsPage> lighty$redirectPages$getTotalPagesListHeight(OptionsPageRegistry instance) {
+	private List<GameOptions> lighty$redirectPages$getTotalPagesListHeight(GameOptionsRegistry instance) {
 		return redirect(instance);
 	}
 
@@ -64,10 +64,10 @@ public abstract class ScreenOptionsMixin extends Screen {
 		method = "mouseClicked",
 		at = @At(
 			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/options/data/OptionsPageRegistry;getPages()Ljava/util/List;"
+			target = "Lnet.minecraft.client.options.GameOptionsRegistry;getPages()Ljava/util/List;"
 		)
 	)
-	private List<OptionsPage> lighty$redirectPages$mouseClicked(OptionsPageRegistry instance) {
+	private List<GameOptions> lighty$redirectPages$mouseClicked(GameOptionsRegistry instance) {
 		return redirect(instance);
 	}
 }

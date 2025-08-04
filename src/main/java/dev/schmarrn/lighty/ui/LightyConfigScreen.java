@@ -5,14 +5,14 @@ import dev.schmarrn.lighty.config.Config;
 import dev.schmarrn.lighty.event.Compute;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.options.ScreenOptions;
+import net.minecraft.client.gui.screen.options.OptionsScreen;
 import net.minecraft.client.gui.options.components.OptionsCategory;
 import net.minecraft.client.gui.options.components.OptionsComponent;
 import net.minecraft.client.gui.options.components.ShortcutComponent;
-import net.minecraft.client.gui.options.data.OptionsPage;
+import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.util.helper.FileOpener;
-import net.minecraft.core.block.Blocks;
-import net.minecraft.core.item.ItemStack;
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,18 +20,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
-public class LightyConfigScreen extends ScreenOptions {
+public class LightyConfigScreen extends Screen {
 
-	private static final List<OptionsPage> OPTION_PAGES = new ArrayList<>();
+	private static final List<GameOptions> OPTION_PAGES = new ArrayList<>();
 	private static final List<Supplier<OptionsComponent>> MODE_OPTIONS = new ArrayList<>();
 
 	public LightyConfigScreen(Screen parent) {
-		super(parent, getDefaultPage());
+		super();
 	}
 
 	@Override
 	public void removed() {
-		for (OptionsPage optionPage : OPTION_PAGES)
+		for (GameOptions optionPage : OPTION_PAGES)
 			for (OptionsComponent component : optionPage.getComponents())
 				component.onClose();
 
@@ -46,16 +46,16 @@ public class LightyConfigScreen extends ScreenOptions {
 		Compute.markDirty();
 	}
 
-	public static OptionsPage getDefaultPage() {
+	public static GameOptions getDefaultPage() {
 		return OPTION_PAGES.get(0);
 	}
 
-	public static List<OptionsPage> getPages() {
+	public static List<GameOptions> getPages() {
 		return OPTION_PAGES;
 	}
 
 	public static void register() {
-		OPTION_PAGES.add(new OptionsPage("gui."+Lighty.MOD_ID+".options.general.title", new ItemStack(Blocks.TORCH_COAL))
+		OPTION_PAGES.add(new GameOptions("gui."+Lighty.MOD_ID+".options.general.title", new ItemStack(Block.TORCH))
 			.withComponent(new OptionsCategory("gui."+ Lighty.MOD_ID+".options.toggle")
 				.withComponent(Config.SHOW_SAFE.getOptionInstance())
 				.withComponent(Config.SHOULD_AUTO_ON.getOptionInstance())
@@ -72,7 +72,7 @@ public class LightyConfigScreen extends ScreenOptions {
 			)
 		);
 
-		OptionsPage page = new OptionsPage("gui."+Lighty.MOD_ID+".options.modes.title", new ItemStack(Blocks.BOOKSHELF_PLANKS_OAK));
+		GameOptions page = new GameOptions("gui."+Lighty.MOD_ID+".options.modes.title", new ItemStack(Block.BOOKSHELF));
 		for (Supplier<OptionsComponent> component : MODE_OPTIONS) {
 			page.withComponent(component.get());
 		}

@@ -2,16 +2,15 @@ package dev.schmarrn.lighty;
 
 import dev.schmarrn.lighty.config.Config;
 import dev.schmarrn.lighty.event.Compute;
-import net.minecraft.client.entity.player.PlayerLocal;
-import net.minecraft.core.item.Item;
-import net.minecraft.core.item.ItemStack;
+import net.minecraft.client.entity.living.player.InputPlayerEntity;
+import net.minecraft.item.ItemStack;
 
 import java.util.List;
 
 public class SMACH {
 	private static State state = State.OFF;
 
-	public static void updateCompute(PlayerLocal player) {
+	public static void updateCompute(InputPlayerEntity player) {
 		if (!Config.SHOULD_AUTO_ON.getValue()) {
 			if (state == State.AUTO || state == State.OVERRIDE) {
 				// if auto_on is disabled, but we somehow got stuck inside of one of the auto_on states, reset to OFF
@@ -24,13 +23,10 @@ public class SMACH {
 		boolean holdsItem = false;
 		List<String> activationItems = Config.AUTO_ON_ITEM_LIST.getValue();
 
-		ItemStack heldItem = player.getHeldItem();
+		ItemStack heldItem = player.inventory.getMainHandStack();
 		if (heldItem != null) {
-			Item item = Item.itemsList[heldItem.itemID];
-			if (item != null) {
-				String name = item.namespaceID.toString();
-				holdsItem = activationItems.contains(name);
-			}
+			holdsItem = activationItems.contains(heldItem.getTranslationKey());
+
 		}
 
 		// update state:

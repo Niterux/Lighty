@@ -57,7 +57,7 @@ dependencies {
 	nests(ploceus.nests(nests_build)) // remove this line if not using inner class patches
     modImplementation("net.fabricmc:fabric-loader:$loader_version")
 	modImplementation("com.terraformersmc:modmenu:$mod_menu_version")
-	modImplementation("io.github.moehreag:legacy-lwjgl3:$legacy_lwjgl_3_version")
+	//modImplementation("io.github.moehreag:legacy-lwjgl3:$legacy_lwjgl_3_version")
 	ploceus.dependOsl(osl_version, "client")
 
 }

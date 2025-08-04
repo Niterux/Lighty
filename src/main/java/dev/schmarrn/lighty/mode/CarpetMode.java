@@ -4,12 +4,14 @@ import dev.schmarrn.lighty.Lighty;
 import dev.schmarrn.lighty.api.LightyMode;
 import dev.schmarrn.lighty.api.ModeManager;
 import dev.schmarrn.lighty.config.Config;
+import dev.schmarrn.lighty.mixin.accessors.MinecraftInstanceAccessor;
+import it.unimi.dsi.fastutil.ints.IntIntMutablePair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.options.components.OptionsCategory;
 import net.minecraft.client.render.LightmapHelper;
 import net.minecraft.client.render.camera.ICamera;
 import net.minecraft.client.render.tessellator.Tessellator;
-import net.minecraft.client.world.WorldClient;
+import net.minecraft.client.world.MultiplayerWorld;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.Blocks;
 import net.minecraft.core.util.collection.Pair;
@@ -28,10 +30,10 @@ public class CarpetMode extends LightyMode<Provider.Pos, Pair<Double, Integer>> 
 	}
 
 	@Override
-	public void compute(WorldClient world, int x, int y, int z) {
+	public void compute(MultiplayerWorld world, int x, int y, int z) {
 		if (Provider.isBlocked(x, y+1, z, world)) return;
 
-		Pair<Integer, Integer> light = Provider.compute(world, x, y, z);
+		IntIntMutablePair light = Provider.compute(world, x, y, z);
 		if (light == null) return;
 
 		Integer color = Provider.getColor(light);
@@ -46,7 +48,7 @@ public class CarpetMode extends LightyMode<Provider.Pos, Pair<Double, Integer>> 
 		cache.put(new Provider.Pos(x, y+1, z), Pair.of(offset, color));
 	}
 
-	private static boolean shouldRenderSideFace(int x, int y, int z, WorldClient world, double originalHeight) {
+	private static boolean shouldRenderSideFace(int x, int y, int z, MultiplayerWorld world, double originalHeight) {
 		Block<?> block = world.getBlock(x, y, z);
 		if (originalHeight > 0.0) {
 			// the original block is a snow layer
@@ -75,7 +77,7 @@ public class CarpetMode extends LightyMode<Provider.Pos, Pair<Double, Integer>> 
 		GL11.glPushMatrix();
 		if (Config.OVERLAY_TRANSPARENCY.getValue() < 100)
 			GL11.glEnable(GL11.GL_BLEND);
-
+		MinecraftInstanceAccessor.getMinecraft().world.dimension.brightnessTable[Config.OVERLAY_BRIGHTNESS.getValue()];
 		if (LightmapHelper.isLightmapEnabled()) {
 			Integer light = Config.OVERLAY_BRIGHTNESS.getValue();
 			LightmapHelper.setLightmapCoord(light, light);
@@ -100,7 +102,7 @@ public class CarpetMode extends LightyMode<Provider.Pos, Pair<Double, Integer>> 
 				GL11.glScalef(1f/16f, -1f/16f, 1f/16f);
 				GL11.glRotated(90, 1, 0, 0);
 				drawTexture(0, 0, 1, 0, 0, 16, 16, data.getRight());
-				WorldClient world = minecraft.currentWorld;
+				MultiplayerWorld world = minecraft.currentWorld;
 
 				GL11.glRotated(-90, 1, 0, 0);
 

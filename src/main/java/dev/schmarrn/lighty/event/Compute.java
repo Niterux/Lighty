@@ -6,7 +6,7 @@ import dev.schmarrn.lighty.api.LightyMode;
 import dev.schmarrn.lighty.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.PlayerLocal;
-import net.minecraft.client.world.WorldClient;
+import net.minecraft.client.world.MultiplayerWorld;
 import net.minecraft.core.world.chunk.Chunk;
 
 public class Compute {
@@ -22,7 +22,7 @@ public class Compute {
 	 */
 	public static void callback() {
 		Minecraft minecraft = Minecraft.getMinecraft();
-		WorldClient world = minecraft.currentWorld;
+		MultiplayerWorld world = minecraft.currentWorld;
 		PlayerLocal player = minecraft.thePlayer;
 
 		if (player == null || world == null) return;

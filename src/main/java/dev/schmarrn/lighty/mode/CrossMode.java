@@ -4,18 +4,19 @@ import dev.schmarrn.lighty.Lighty;
 import dev.schmarrn.lighty.api.LightyMode;
 import dev.schmarrn.lighty.api.ModeManager;
 import dev.schmarrn.lighty.config.Config;
+import it.unimi.dsi.fastutil.doubles.DoubleIntMutablePair;
+import it.unimi.dsi.fastutil.ints.IntIntMutablePair;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.options.components.OptionsCategory;
 import net.minecraft.client.render.LightmapHelper;
 import net.minecraft.client.render.camera.ICamera;
-import net.minecraft.client.render.tessellator.Tessellator;
-import net.minecraft.client.world.WorldClient;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import net.minecraft.client.world.MultiplayerWorld;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.Blocks;
 import net.minecraft.core.util.collection.Pair;
 import org.lwjgl.opengl.GL11;
 
-public class CrossMode extends LightyMode<Provider.Pos, Pair<Double, Integer>> {
+public class CrossMode extends LightyMode<Provider.Pos, DoubleIntMutablePair> {
 
 	public static void init() {
 		ModeManager.registerMode(Lighty.MOD_ID+".cross_mode", new CrossMode());
@@ -26,10 +27,10 @@ public class CrossMode extends LightyMode<Provider.Pos, Pair<Double, Integer>> {
 	}
 
 	@Override
-	public void compute(WorldClient world, int x, int y, int z) {
+	public void compute(MultiplayerWorld world, int x, int y, int z) {
 		if (Provider.isBlocked(x, y+1, z, world)) return;
 
-		Pair<Integer, Integer> light = Provider.compute(world, x, y, z);
+		IntIntMutablePair light = Provider.compute(world, x, y, z);
 		if (light == null) return;
 
 		Integer color = Provider.getColor(light);
@@ -41,7 +42,7 @@ public class CrossMode extends LightyMode<Provider.Pos, Pair<Double, Integer>> {
 		if (block != null && block.id() == Blocks.LAYER_SNOW.id())
 			offset += block.getBlockBoundsFromState(world, x, y+1, z).maxY;
 
-		cache.put(new Provider.Pos(x, y+1, z), Pair.of(offset, color));
+		cache.put(new Provider.Pos(x, y+1, z), new DoubleIntMutablePair(offset, color));
 	}
 
 	@Override
@@ -85,21 +86,21 @@ public class CrossMode extends LightyMode<Provider.Pos, Pair<Double, Integer>> {
 	private static void drawCross(int color) {
 		GL11.glLineWidth(Config.OVERLAY_LINE_THICKNESS.getValue());
 
-		Tessellator tessellator = Tessellator.instance;
-		tessellator.startDrawing(GL11.GL_LINES);
-		tessellator.setColorRGBA(
+		BufferBuilder bufferBuilder = BufferBuilder.INSTANCE;
+		bufferBuilder.start(GL11.GL_LINES);
+		bufferBuilder.color(
 			(color >> 16) & 0xFF,
 			(color >> 8) & 0xFF,
 			color & 0xFF,
 			(int) (2.55 * Config.OVERLAY_TRANSPARENCY.getValue())
 		);
 
-		tessellator.addVertex(-8, 1, 0);
-		tessellator.addVertex(+8, 1, 0);
+		bufferBuilder.vertex(-8, 1, 0);
+		bufferBuilder.vertex(+8, 1, 0);
 
-		tessellator.addVertex(0, 1 - 8, 0);
-		tessellator.addVertex(0, 1 + 8, 0);
+		bufferBuilder.vertex(0, 1 - 8, 0);
+		bufferBuilder.vertex(0, 1 + 8, 0);
 
-		tessellator.draw();
+		bufferBuilder.end();
 	}
 }

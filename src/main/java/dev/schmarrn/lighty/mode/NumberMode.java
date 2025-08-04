@@ -4,12 +4,13 @@ import dev.schmarrn.lighty.Lighty;
 import dev.schmarrn.lighty.api.LightyMode;
 import dev.schmarrn.lighty.api.ModeManager;
 import dev.schmarrn.lighty.config.Config;
+import it.unimi.dsi.fastutil.ints.IntIntMutablePair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.options.components.OptionsCategory;
 import net.minecraft.client.render.LightmapHelper;
 import net.minecraft.client.render.camera.ICamera;
 import net.minecraft.client.render.tessellator.Tessellator;
-import net.minecraft.client.world.WorldClient;
+import net.minecraft.client.world.MultiplayerWorld;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.util.collection.Pair;
 import net.minecraft.core.util.phys.AABB;
@@ -29,10 +30,10 @@ public class NumberMode extends LightyMode<Provider.Pos, NumberMode.Data> {
 	}
 
 	@Override
-	public void compute(WorldClient world, int x, int y, int z) {
+	public void compute(MultiplayerWorld world, int x, int y, int z) {
 		if (Provider.isBlocked(x, y+1, z, world)) return;
 
-		Pair<Integer, Integer> light = Provider.compute(world, x, y, z);
+		IntIntMutablePair light = Provider.compute(world, x, y, z);
 		if (light == null) return;
 
 		Integer color = Provider.getColor(light);
@@ -43,7 +44,7 @@ public class NumberMode extends LightyMode<Provider.Pos, NumberMode.Data> {
 		Block<?> block = world.getBlock(x, y + 1, z);
 		if (block != null) {
 			AABB bounds = block.getBlockBoundsFromState(world, x, y + 1, z);
-			offset += bounds.maxY;
+			offset += block.getBlockBoundsFromState(world, x, y+1, z).maxY;
 		}
 
 		cache.put(new Provider.Pos(x, y+1, z), new Data(light.getLeft(), light.getRight(), offset, color));

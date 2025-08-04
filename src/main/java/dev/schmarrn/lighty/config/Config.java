@@ -48,11 +48,7 @@ public class Config {
 	public static final ColorConfig OVERLAY_RED = new ColorConfig("lighty.overlay_red", 0xFF0000);
 
 	public static final StringListConfig AUTO_ON_ITEM_LIST = new StringListConfig("lighty.auto_on.item", Arrays.asList(
-		"minecraft:block/torch_coal",
-		"minecraft:item/lantern_firefly_green",
-		"minecraft:item/lantern_firefly_blue",
-		"minecraft:item/lantern_firefly_orange",
-		"minecraft:item/lantern_firefly_red"
+		"torch"
 	));
 	public static final BooleanConfig SHOULD_AUTO_ON = new BooleanConfig("lighty.auto_on", false);
 	public static final BooleanConfig SHOW_SKYLIGHT_LEVEL = new BooleanConfig("lighty.show_skylight_level", true);

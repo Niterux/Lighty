@@ -6,7 +6,7 @@ import dev.schmarrn.lighty.event.KeyBind;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.PlayerLocal;
 import net.minecraft.client.input.InputDevice;
-import net.minecraft.client.world.WorldClient;
+import net.minecraft.client.world.MultiplayerWorld;
 import net.minecraft.core.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(value = Minecraft.class, remap = false)
 public abstract class MinecraftMixin {
 	@Shadow
-	public WorldClient currentWorld;
+	public MultiplayerWorld currentWorld;
 
 	@Shadow
 	public PlayerLocal thePlayer;
@@ -33,8 +33,8 @@ public abstract class MinecraftMixin {
 		Compute.callback();
 	}
 
-	@Inject(method = "changeWorld(Lnet/minecraft/client/world/WorldClient;Ljava/lang/String;Lnet/minecraft/core/entity/player/Player;)V", at = @At("TAIL"))
-	private void lighty$registerOnLightUpdateHandler(WorldClient world, String loadingTitle, Player player, CallbackInfo ci) {
+	@Inject(method = "changeWorld(Lnet/minecraft/client/world/MultiplayerWorld;Ljava/lang/String;Lnet/minecraft/core/entity/player/Player;)V", at = @At("TAIL"))
+	private void lighty$registerOnLightUpdateHandler(MultiplayerWorld world, String loadingTitle, Player player, CallbackInfo ci) {
 		if (currentWorld != null)
 			currentWorld.listeners.add(new LightyWorldEventListener());
 	}

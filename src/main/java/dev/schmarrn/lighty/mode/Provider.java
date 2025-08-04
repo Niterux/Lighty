@@ -1,43 +1,43 @@
 package dev.schmarrn.lighty.mode;
 
 import dev.schmarrn.lighty.config.Config;
+import dev.schmarrn.lighty.mixin.accessors.MinecraftInstanceAccessor;
+import it.unimi.dsi.fastutil.ints.IntIntMutablePair;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.world.WorldClient;
-import net.minecraft.core.block.Block;
-import net.minecraft.core.block.tag.BlockTags;
-import net.minecraft.core.enums.LightLayer;
-import net.minecraft.core.util.collection.Pair;
-import net.minecraft.core.world.chunk.Chunk;
-
-import javax.annotation.Nullable;
+import net.minecraft.client.world.MultiplayerWorld;
+import net.minecraft.block.Block;
+import net.minecraft.world.LightType;
+import net.minecraft.world.World;
+import net.minecraft.world.chunk.WorldChunk;
+import org.jetbrains.annotations.Nullable;
 
 public class Provider {
-	public static boolean isBlocked(int x, int y, int z, WorldClient world) {
-		Block<?> block = world.getBlock(x, y, z);
+	public static boolean isBlocked(int x, int y, int z, MultiplayerWorld world) {
+		Block block = Block.BY_ID[world.getBlock(x, y, z)];
 
-		if (y < 0 || y > world.getHeightBlocks()-1)
+		if (y < 0 || y > 127)
 			return true;
 
-		return (block != null && (block.hasTag(BlockTags.PREVENT_MOB_SPAWNS) || block.getMaterial().isSolid()))
-			|| !(world.isBlockNormalCube(x, y-1, z)
-			&& !world.isBlockNormalCube(x, y, z)
-			&& !world.getBlockMaterial(x, y, z).isLiquid());
+		return (block != null && (block.material.isSolid()))
+			|| !(world.isRedstoneConductor(x, y-1, z)
+			&& !world.isRedstoneConductor(x, y, z)
+			&& !world.getMaterial(x, y, z).isLiquid());
 	}
 
-	public static @Nullable Pair<Integer, Integer> compute(WorldClient world, int x, int y, int z) {
-		Minecraft minecraft = Minecraft.getMinecraft();
-		WorldClient currentWorld = minecraft.currentWorld;
+	public static @Nullable IntIntMutablePair compute(MultiplayerWorld world, int x, int y, int z) {
+		Minecraft minecraft = MinecraftInstanceAccessor.getMinecraft();
+		World currentWorld = minecraft.world;
 		if (currentWorld == null) return null;
-		Chunk chunk = world.getChunkFromBlockCoords(x, z);
+		WorldChunk chunk = world.getChunk(x, z);
 
-		int blockLightLevel = chunk.getBrightness(LightLayer.Block, x & 0xF, y+1, z & 0xF);
-		int skyLightLevel = chunk.getBrightness(LightLayer.Sky, x & 0xF, y+1, z & 0xF);
+		int blockLightLevel = chunk.getLightAt(LightType.BLOCK, x & 0xF, y+1, z & 0xF);
+		int skyLightLevel = chunk.getLightAt(LightType.SKY, x & 0xF, y+1, z & 0xF);
 
-		return Pair.of(blockLightLevel, skyLightLevel);
+		return new IntIntMutablePair(blockLightLevel, skyLightLevel);
 	}
 
-	public static @Nullable Integer getColor(Pair<Integer, Integer> light) {
-		return getColor(light.getLeft(), light.getRight());
+	public static @Nullable Integer getColor(IntIntMutablePair light) {
+		return getColor(light.leftInt(), light.rightInt());
 	}
 
 	public static @Nullable Integer getColor(int blockLightLevel, int skyLightLevel) {

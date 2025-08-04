@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.options.components.KeyBindingComponent;
 import net.minecraft.client.gui.options.components.OptionsCategory;
-import net.minecraft.client.gui.options.data.OptionsPages;
+import net.minecraft.client.options.GameOptionss;
 import net.minecraft.client.input.InputDevice;
 import net.minecraft.client.option.GameSettings;
 import net.minecraft.client.option.KeyBinding;
@@ -46,7 +46,7 @@ public class KeyBind {
 		GameSettings.keys.add(enable);
 		GameSettings.keys.add(toggle);
 
-		OptionsPages.CONTROLS
+		GameOptionss.CONTROLS
 			.withComponent(new OptionsCategory("category.lighty")
 				.withComponent(new KeyBindingComponent(enable))
 				.withComponent(new KeyBindingComponent(toggle)));
