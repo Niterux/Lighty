@@ -1,6 +1,7 @@
 package dev.schmarrn.lighty.config;
 
-import net.minecraft.client.gui.widget.ButtonWidget;
+import dev.schmarrn.lighty.ui.screen.OptionsScreen;
+import dev.schmarrn.lighty.ui.widget.OptionWidget;
 
 public abstract class ConfigType<T> implements ConfigSerDe {
 	private final T DEFAULT_VALUE;
@@ -40,7 +41,7 @@ public abstract class ConfigType<T> implements ConfigSerDe {
 		return KEY;
 	}
 
-	public abstract ButtonWidget getOptionInstance();
+	public abstract OptionWidget<T> getOptionInstance(OptionsScreen optionsScreen);
 
 	protected String getTranslationKey() {
 		return KEY.replaceFirst("\\.", ".options.");

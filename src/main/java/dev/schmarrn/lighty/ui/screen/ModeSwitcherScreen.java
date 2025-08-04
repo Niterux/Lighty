@@ -66,7 +66,6 @@ public class ModeSwitcherScreen extends Screen {
 		}
 	}
 
-
 	public static void addButton(String title, Runnable onPress) {
 		MODES.add(new Mode(title, onPress));
 	}

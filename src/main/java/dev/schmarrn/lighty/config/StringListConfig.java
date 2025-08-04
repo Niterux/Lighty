@@ -1,6 +1,7 @@
 package dev.schmarrn.lighty.config;
 
-import net.minecraft.client.gui.widget.ButtonWidget;
+import dev.schmarrn.lighty.ui.screen.OptionsScreen;
+import dev.schmarrn.lighty.ui.widget.OptionWidget;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +13,7 @@ public class StringListConfig extends ConfigType<List<String>> {
 	}
 
 	@Override
-	public ButtonWidget getOptionInstance() {
+	public OptionWidget<List<String>> getOptionInstance(OptionsScreen optionsScreen) {
 		return null;
 	}
 

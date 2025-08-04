@@ -1,10 +1,12 @@
 package dev.schmarrn.lighty.config;
 
+import dev.schmarrn.lighty.ui.screen.OptionsScreen;
+import dev.schmarrn.lighty.ui.widget.OptionWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 
 public class StringConfig extends ConfigType<String> {
 	@Override
-	public ButtonWidget getOptionInstance() {
+	public OptionWidget<String> getOptionInstance(OptionsScreen optionsScreen) {
 		return null;
 	}
 

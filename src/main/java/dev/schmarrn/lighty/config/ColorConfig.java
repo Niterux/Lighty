@@ -1,30 +1,27 @@
 package dev.schmarrn.lighty.config;
 
-import net.minecraft.client.gui.widget.ButtonWidget;
+import dev.schmarrn.lighty.ui.screen.OptionsScreen;
+import dev.schmarrn.lighty.ui.widget.ColorWidget;
+import dev.schmarrn.lighty.ui.widget.OptionWidget;
 
-public class ColorConfig extends ConfigType<Integer> {
+public class ColorConfig extends ConfigType<Color> {
 	@Override
-	public ButtonWidget getOptionInstance() {
-		return null;
+	public OptionWidget<Color> getOptionInstance(OptionsScreen optionsScreen) {
+		return new ColorWidget(optionsScreen, this);
 	}
 
-	public ColorConfig(String key, Integer defaultValue) {
+	public ColorConfig(String key, Color defaultValue) {
 		super(key, defaultValue);
 	}
 
 	@Override
 	public String serialize() {
-		int color = getValue();
-		StringBuilder ret = new StringBuilder("0x");
-		for (int ii = 5; ii >= 0; --ii) {
-			int nibble = (color & (0xF << (4*ii))) >> (4*ii);
-			ret.append(Integer.toHexString(nibble));
-		}
-		return ret.toString();
+		Color color = getValue();
+		return "0x" + Integer.toHexString(color.toInt());
 	}
 
 	@Override
 	public void deserialize(String color) {
-		setValue(Integer.parseUnsignedInt(color.replace("0x", ""), 16));
+		setValue(Color.fromHex(color));
 	}
 }

@@ -1,11 +1,13 @@
 package dev.schmarrn.lighty.config;
 
-import net.minecraft.client.gui.widget.ButtonWidget;
+import dev.schmarrn.lighty.ui.screen.OptionsScreen;
+import dev.schmarrn.lighty.ui.widget.BooleanWidget;
+import dev.schmarrn.lighty.ui.widget.OptionWidget;
 
 public class BooleanConfig extends ConfigType<Boolean> {
 	@Override
-	public ButtonWidget getOptionInstance() {
-		return null;
+	public OptionWidget<Boolean> getOptionInstance(OptionsScreen optionsScreen) {
+		return new BooleanWidget(optionsScreen, this);
 	}
 
 	public BooleanConfig(String key, Boolean defaultValue) {

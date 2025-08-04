@@ -1,12 +1,14 @@
 package dev.schmarrn.lighty.config;
 
 import dev.schmarrn.lighty.Lighty;
+import dev.schmarrn.lighty.ui.screen.OptionsScreen;
+import dev.schmarrn.lighty.ui.widget.OptionWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 
 public class IntegerConfig extends ConfigType<Integer> {
 	private final int min, max;
 	@Override
-	public ButtonWidget getOptionInstance() {
+	public OptionWidget<Integer> getOptionInstance(OptionsScreen optionsScreen) {
 		return null;
 	}
 

@@ -27,8 +27,8 @@ public class NumberMode extends LightyMode<Provider.Pos, NumberMode.Data> {
 
 	public static void init() {
 		ModeManager.registerMode(Lighty.MOD_ID+".number_mode", new NumberMode());
-		ModeManager.addOptions(
-		);
+		Config.MODE_SPECIFIC_OPTIONS.add(Config.SHOW_SKYLIGHT_LEVEL);
+		Config.MODE_SPECIFIC_OPTIONS.add(Config.SHOW_ABOVE_HITBOX);
 	}
 
 	@Override

@@ -19,10 +19,7 @@ public class CrossMode extends LightyMode<Provider.Pos, DoubleIntMutablePair> {
 
 	public static void init() {
 		ModeManager.registerMode(Lighty.MOD_ID+".cross_mode", new CrossMode());
-		ModeManager.addOptions(
-				() -> new OptionsCategory("gui.modeSwitcher."+Lighty.MOD_ID+".cross_mode")
-						.withComponent(Config.OVERLAY_LINE_THICKNESS.getOptionInstance())
-		);
+		Config.MODE_SPECIFIC_OPTIONS.add(Config.OVERLAY_LINE_THICKNESS);
 	}
 
 	@Override
