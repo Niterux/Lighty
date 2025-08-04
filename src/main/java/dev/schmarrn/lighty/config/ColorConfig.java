@@ -1,10 +1,10 @@
 package dev.schmarrn.lighty.config;
 
-import net.minecraft.client.gui.options.components.OptionsComponent;
+import net.minecraft.client.gui.widget.ButtonWidget;
 
 public class ColorConfig extends ConfigType<Integer> {
 	@Override
-	public OptionsComponent getOptionInstance() {
+	public ButtonWidget getOptionInstance() {
 		return null;
 	}
 

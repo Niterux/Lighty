@@ -1,7 +1,7 @@
 package dev.schmarrn.lighty;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
-import dev.schmarrn.lighty.ui.LightyConfigScreen;
+import dev.schmarrn.lighty.ui.screen.LightyConfigScreen;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 
 public class ModMenuIntegration implements ModMenuApi {

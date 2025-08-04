@@ -1,8 +1,8 @@
 package dev.schmarrn.lighty.api;
 
 import dev.schmarrn.lighty.ModeLoader;
-import dev.schmarrn.lighty.ui.LightyConfigScreen;
-import dev.schmarrn.lighty.ui.ModeSwitcherScreen;
+import dev.schmarrn.lighty.ui.screen.LightyConfigScreen;
+import dev.schmarrn.lighty.ui.screen.ModeSwitcherScreen;
 
 import java.util.function.Supplier;
 
@@ -23,8 +23,7 @@ public class ModeManager {
         ModeLoader.put(id, mode);
 
         ModeSwitcherScreen.addButton(
-			"gui.modeSwitcher."+id,
-			"gui.modeSwitcher."+id+".tooltip", () -> ModeLoader.loadMode(id)
+			"gui.modeSwitcher."+id, () -> ModeLoader.loadMode(id)
         );
     }
 

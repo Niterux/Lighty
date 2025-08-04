@@ -1,30 +1,13 @@
 package dev.schmarrn.lighty.config;
 
 import dev.schmarrn.lighty.Lighty;
-import net.minecraft.client.gui.options.components.ButtonComponent;
-import net.minecraft.client.gui.options.components.ToggleableOptionComponent;
-import net.minecraft.client.option.OptionRange;
+import net.minecraft.client.gui.widget.ButtonWidget;
 
 public class IntegerConfig extends ConfigType<Integer> {
 	private final int min, max;
 	@Override
-	public ButtonComponent getOptionInstance() {
-		return new ToggleableOptionComponent<>(new OptionRange(null, this.getTranslationKey(), getValue(), max+1) {
-			@Override
-			public void onUpdate() {
-				setValue(this.value);
-			}
-
-			@Override
-			public String getDisplayString() {
-				return  getDisplayStringValue();
-			}
-
-			@Override
-			public String getDisplayStringValue() {
-				return  getValue()+"";
-			}
-		});
+	public ButtonWidget getOptionInstance() {
+		return null;
 	}
 
 	public IntegerConfig(String key, Integer defaultValue, int min, int max) {

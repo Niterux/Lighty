@@ -1,5 +1,7 @@
 package dev.schmarrn.lighty.config;
 
+import net.minecraft.client.gui.widget.ButtonWidget;
+
 public abstract class ConfigType<T> implements ConfigSerDe {
 	private final T DEFAULT_VALUE;
 	private final String KEY;
@@ -38,7 +40,7 @@ public abstract class ConfigType<T> implements ConfigSerDe {
 		return KEY;
 	}
 
-	public abstract OptionsComponent getOptionInstance();
+	public abstract ButtonWidget getOptionInstance();
 
 	protected String getTranslationKey() {
 		return KEY.replaceFirst("\\.", ".options.");

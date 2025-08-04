@@ -18,6 +18,7 @@ import net.minecraft.core.util.collection.Pair;
 import net.minecraft.core.util.phys.AABB;
 import net.minecraft.entity.living.LivingEntity;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 public class NumberMode extends LightyMode<Provider.Pos, NumberMode.Data> {
@@ -27,14 +28,11 @@ public class NumberMode extends LightyMode<Provider.Pos, NumberMode.Data> {
 	public static void init() {
 		ModeManager.registerMode(Lighty.MOD_ID+".number_mode", new NumberMode());
 		ModeManager.addOptions(
-				() -> new OptionsCategory("gui.modeSwitcher."+Lighty.MOD_ID+".number_mode")
-						.withComponent(Config.SHOW_SKYLIGHT_LEVEL.getOptionInstance())
-						.withComponent(Config.SHOW_ABOVE_HITBOX.getOptionInstance())
 		);
 	}
 
 	@Override
-	public void compute(MultiplayerWorld world, int x, int y, int z) {
+	public void compute(World world, int x, int y, int z) {
 		if (Provider.isBlocked(x, y+1, z, world)) return;
 
 		IntIntMutablePair light = Provider.compute(world, x, y, z);

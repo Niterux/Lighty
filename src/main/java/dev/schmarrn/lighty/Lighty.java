@@ -8,7 +8,7 @@ import dev.schmarrn.lighty.event.Render;
 import dev.schmarrn.lighty.mode.CarpetMode;
 import dev.schmarrn.lighty.mode.CrossMode;
 import dev.schmarrn.lighty.mode.NumberMode;
-import dev.schmarrn.lighty.ui.LightyConfigScreen;
+import dev.schmarrn.lighty.ui.screen.LightyConfigScreen;
 import net.minecraft.client.Minecraft;
 import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;

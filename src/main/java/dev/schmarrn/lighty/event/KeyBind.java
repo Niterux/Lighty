@@ -2,7 +2,7 @@ package dev.schmarrn.lighty.event;
 
 import dev.schmarrn.lighty.SMACH;
 import dev.schmarrn.lighty.mixin.accessors.MinecraftInstanceAccessor;
-import dev.schmarrn.lighty.ui.ModeSwitcherScreen;
+import dev.schmarrn.lighty.ui.screen.ModeSwitcherScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.options.components.KeyBindingComponent;
 import net.minecraft.client.gui.options.components.OptionsCategory;
