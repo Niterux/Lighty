@@ -17,7 +17,7 @@ public class StringListConfig extends ConfigType<List<String>> {
 	}
 
 	@Override
-	String serialize() {
+	public String serialize() {
 		StringBuilder builder = new StringBuilder();
 		for (int ii = 0; ii < this.getValue().size() - 1; ii++) {
 			builder.append(this.getValue().get(ii).toString());
@@ -28,7 +28,7 @@ public class StringListConfig extends ConfigType<List<String>> {
 	}
 
 	@Override
-	void deserialize(String value) {
+	public void deserialize(String value) {
 		setValue(Arrays.stream(value.split(" ")).collect(Collectors.toList()));
 	}
 }

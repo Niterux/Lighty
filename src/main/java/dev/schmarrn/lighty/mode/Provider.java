@@ -1,10 +1,7 @@
 package dev.schmarrn.lighty.mode;
 
 import dev.schmarrn.lighty.config.Config;
-import dev.schmarrn.lighty.mixin.accessors.MinecraftInstanceAccessor;
 import it.unimi.dsi.fastutil.ints.IntIntMutablePair;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.world.MultiplayerWorld;
 import net.minecraft.block.Block;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
@@ -12,7 +9,7 @@ import net.minecraft.world.chunk.WorldChunk;
 import org.jetbrains.annotations.Nullable;
 
 public class Provider {
-	public static boolean isBlocked(int x, int y, int z, MultiplayerWorld world) {
+	public static boolean isBlocked(int x, int y, int z, World world) {
 		Block block = Block.BY_ID[world.getBlock(x, y, z)];
 
 		if (y < 0 || y > 127)
@@ -24,10 +21,8 @@ public class Provider {
 			&& !world.getMaterial(x, y, z).isLiquid());
 	}
 
-	public static @Nullable IntIntMutablePair compute(MultiplayerWorld world, int x, int y, int z) {
-		Minecraft minecraft = MinecraftInstanceAccessor.getMinecraft();
-		World currentWorld = minecraft.world;
-		if (currentWorld == null) return null;
+	public static @Nullable IntIntMutablePair compute(World world, int x, int y, int z) {
+		if (world == null) return null;
 		WorldChunk chunk = world.getChunk(x, z);
 
 		int blockLightLevel = chunk.getLightAt(LightType.BLOCK, x & 0xF, y+1, z & 0xF);

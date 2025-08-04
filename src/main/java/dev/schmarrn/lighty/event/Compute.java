@@ -4,10 +4,10 @@ import dev.schmarrn.lighty.ModeLoader;
 import dev.schmarrn.lighty.SMACH;
 import dev.schmarrn.lighty.api.LightyMode;
 import dev.schmarrn.lighty.config.Config;
+import dev.schmarrn.lighty.mixin.accessors.MinecraftInstanceAccessor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.PlayerLocal;
-import net.minecraft.client.world.MultiplayerWorld;
-import net.minecraft.core.world.chunk.Chunk;
+import net.minecraft.client.entity.living.player.InputPlayerEntity;
+import net.minecraft.world.World;
 
 public class Compute {
 	private static boolean dirty;
@@ -21,9 +21,9 @@ public class Compute {
 	 * <p>Both the current world and the player will be guaranteed not `null` during this method call.</p>
 	 */
 	public static void callback() {
-		Minecraft minecraft = Minecraft.getMinecraft();
-		MultiplayerWorld world = minecraft.currentWorld;
-		PlayerLocal player = minecraft.thePlayer;
+		Minecraft minecraft = MinecraftInstanceAccessor.getMinecraft();
+		World world = minecraft.world;
+		InputPlayerEntity player = minecraft.player;
 
 		if (player == null || world == null) return;
 
@@ -45,7 +45,7 @@ public class Compute {
 			dirty = false;
 			mode.beforeCompute();
 
-			int computeDistance = Config.OVERLAY_DISTANCE.getValue() * Chunk.CHUNK_SIZE_X;
+			int computeDistance = Config.OVERLAY_DISTANCE.getValue() * 16;
 
 			for (int x = -computeDistance; x <= computeDistance; ++x)
 				for (int y = -computeDistance; y <= computeDistance; ++y)

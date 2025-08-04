@@ -2,12 +2,11 @@
   "required": true,
   "minVersion": "0.8",
   "package": "dev.schmarrn.lighty.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_17",
   "client": [
     "accessors.MinecraftInstanceAccessor",
     "MinecraftMixin",
-    "ScreenOptionsMixin",
-    "WorldRendererMixin"
+    "GameRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

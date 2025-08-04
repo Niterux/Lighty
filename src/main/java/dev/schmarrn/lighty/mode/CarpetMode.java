@@ -5,6 +5,7 @@ import dev.schmarrn.lighty.api.LightyMode;
 import dev.schmarrn.lighty.api.ModeManager;
 import dev.schmarrn.lighty.config.Config;
 import dev.schmarrn.lighty.mixin.accessors.MinecraftInstanceAccessor;
+import it.unimi.dsi.fastutil.doubles.DoubleIntMutablePair;
 import it.unimi.dsi.fastutil.ints.IntIntMutablePair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.options.components.OptionsCategory;
@@ -15,9 +16,10 @@ import net.minecraft.client.world.MultiplayerWorld;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.block.Blocks;
 import net.minecraft.core.util.collection.Pair;
+import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
-public class CarpetMode extends LightyMode<Provider.Pos, Pair<Double, Integer>> {
+public class CarpetMode extends LightyMode<Provider.Pos, DoubleIntMutablePair> {
 
 	private static final float TEXTURE_SIZE = 16;
 
@@ -30,7 +32,7 @@ public class CarpetMode extends LightyMode<Provider.Pos, Pair<Double, Integer>> 
 	}
 
 	@Override
-	public void compute(MultiplayerWorld world, int x, int y, int z) {
+	public void compute(World world, int x, int y, int z) {
 		if (Provider.isBlocked(x, y+1, z, world)) return;
 
 		IntIntMutablePair light = Provider.compute(world, x, y, z);
@@ -45,7 +47,7 @@ public class CarpetMode extends LightyMode<Provider.Pos, Pair<Double, Integer>> 
 		if (block != null && block.id() == Blocks.LAYER_SNOW.id())
 			offset += block.getBlockBoundsFromState(world, x, y+1, z).maxY;
 
-		cache.put(new Provider.Pos(x, y+1, z), Pair.of(offset, color));
+		cache.put(new Provider.Pos(x, y+1, z), new DoubleIntMutablePair(offset, color));
 	}
 
 	private static boolean shouldRenderSideFace(int x, int y, int z, MultiplayerWorld world, double originalHeight) {
@@ -70,7 +72,7 @@ public class CarpetMode extends LightyMode<Provider.Pos, Pair<Double, Integer>> 
 
 	@Override
 	public void render(float partialTicks) {
-		Minecraft minecraft = Minecraft.getMinecraft();
+		Minecraft minecraft = MinecraftInstanceAccessor.getMinecraft();
 		ICamera camera = minecraft.activeCamera;
 		if (camera == null) return;
 
@@ -90,7 +92,7 @@ public class CarpetMode extends LightyMode<Provider.Pos, Pair<Double, Integer>> 
 
 			GL11.glPushMatrix();
 
-			Minecraft.getMinecraft().textureManager.loadTexture(Config.CARPET_TEXTURE.getValue()).bind();
+			MinecraftInstanceAccessor.getMinecraft().textureManager.loadTexture(Config.CARPET_TEXTURE.getValue()).bind();
 			if (Config.FLAT_CARPET.getValue()) {
 				GL11.glTranslated(x, y, z);
 				GL11.glScalef(1f/16f, -1f/16f, 1f/16f);

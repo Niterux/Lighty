@@ -20,14 +20,8 @@
 
   "environment": "client",
   "entrypoints": {
-    "client": [
+    "client-init": [
 			"dev.schmarrn.lighty.Lighty"
-    ],
-    "Usages or usages of base method in All Places": [
-      "dev.schmarrn.lighty.Lighty"
-    ],
-    "afterClientStart": [
-      "dev.schmarrn.lighty.Lighty"
     ],
     "modmenu": [
       "dev.schmarrn.lighty.ModMenuIntegration"

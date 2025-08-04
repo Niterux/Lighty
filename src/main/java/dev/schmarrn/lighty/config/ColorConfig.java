@@ -13,7 +13,7 @@ public class ColorConfig extends ConfigType<Integer> {
 	}
 
 	@Override
-	String serialize() {
+	public String serialize() {
 		int color = getValue();
 		StringBuilder ret = new StringBuilder("0x");
 		for (int ii = 5; ii >= 0; --ii) {
@@ -24,7 +24,7 @@ public class ColorConfig extends ConfigType<Integer> {
 	}
 
 	@Override
-	void deserialize(String color) {
+	public void deserialize(String color) {
 		setValue(Integer.parseUnsignedInt(color.replace("0x", ""), 16));
 	}
 }

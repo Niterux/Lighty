@@ -1,15 +1,14 @@
 package dev.schmarrn.lighty.event;
 
 import dev.schmarrn.lighty.SMACH;
+import dev.schmarrn.lighty.mixin.accessors.MinecraftInstanceAccessor;
 import dev.schmarrn.lighty.ui.ModeSwitcherScreen;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.options.components.KeyBindingComponent;
 import net.minecraft.client.gui.options.components.OptionsCategory;
-import net.minecraft.client.options.GameOptionss;
-import net.minecraft.client.input.InputDevice;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.GameSettings;
-import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.options.KeyBinding;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 
@@ -17,29 +16,20 @@ public class KeyBind {
 	public static KeyBinding enable;
 	public static KeyBinding toggle;
 
-	private static boolean oldEnableState = false;
-	private static boolean oldToggleState = false;
+	public static void callback(int keyCode) {
+		Minecraft minecraft = MinecraftInstanceAccessor.getMinecraft();
+		@Nullable Screen currentScreen = minecraft.screen;
 
-	public static void callback(InputDevice currentInputDevice) {
-		Minecraft minecraft = Minecraft.getMinecraft();
-		@Nullable Screen currentScreen = minecraft.currentScreen;
-
-		if (enable.isPressed() && !oldEnableState && currentScreen == null) {
-			minecraft.displayScreen(new ModeSwitcherScreen());
-		}
-		if (toggle.isPressed() && !oldToggleState) {
+		if(keyCode == enable.keyCode && currentScreen == null)
+			minecraft.openScreen(new ModeSwitcherScreen());
+		if(keyCode == enable.keyCode && currentScreen == null)
 			SMACH.toggle();
-		}
 
-		oldEnableState = enable.isPressed();
-		oldToggleState = toggle.isPressed();
 	}
 
 	public static void init() {
-		enable = new KeyBinding("key.lighty.enable")
-			.setDefault(InputDevice.keyboard, Keyboard.KEY_F6);
-		toggle = new KeyBinding("key.lighty.toggle")
-			.setDefault(InputDevice.keyboard, Keyboard.KEY_F7);
+		enable = new KeyBinding("key.lighty.enable", Keyboard.KEY_F6);
+		toggle = new KeyBinding("key.lighty.toggle", Keyboard.KEY_F7);
 	}
 
 	public static void register() {

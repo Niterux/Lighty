@@ -51,12 +51,12 @@ public class IntegerConfig extends ConfigType<Integer> {
 	}
 
 	@Override
-	String serialize() {
+	public String serialize() {
 		return Integer.toString(getValue());
 	}
 
 	@Override
-	void deserialize(String value) {
+	public void deserialize(String value) {
 		setValue(Integer.valueOf(value));
 	}
 }

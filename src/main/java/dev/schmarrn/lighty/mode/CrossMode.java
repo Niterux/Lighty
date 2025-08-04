@@ -4,16 +4,15 @@ import dev.schmarrn.lighty.Lighty;
 import dev.schmarrn.lighty.api.LightyMode;
 import dev.schmarrn.lighty.api.ModeManager;
 import dev.schmarrn.lighty.config.Config;
+import dev.schmarrn.lighty.mixin.accessors.MinecraftInstanceAccessor;
 import it.unimi.dsi.fastutil.doubles.DoubleIntMutablePair;
 import it.unimi.dsi.fastutil.ints.IntIntMutablePair;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.render.LightmapHelper;
-import net.minecraft.client.render.camera.ICamera;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import net.minecraft.client.world.MultiplayerWorld;
-import net.minecraft.core.block.Block;
-import net.minecraft.core.block.Blocks;
-import net.minecraft.core.util.collection.Pair;
+import net.minecraft.entity.living.LivingEntity;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
 public class CrossMode extends LightyMode<Provider.Pos, DoubleIntMutablePair> {
@@ -27,7 +26,7 @@ public class CrossMode extends LightyMode<Provider.Pos, DoubleIntMutablePair> {
 	}
 
 	@Override
-	public void compute(MultiplayerWorld world, int x, int y, int z) {
+	public void compute(World world, int x, int y, int z) {
 		if (Provider.isBlocked(x, y+1, z, world)) return;
 
 		IntIntMutablePair light = Provider.compute(world, x, y, z);
@@ -38,17 +37,17 @@ public class CrossMode extends LightyMode<Provider.Pos, DoubleIntMutablePair> {
 
 		double offset = 0;
 
-		Block<?> block = world.getBlock(x, y+1, z);
-		if (block != null && block.id() == Blocks.LAYER_SNOW.id())
-			offset += block.getBlockBoundsFromState(world, x, y+1, z).maxY;
+		int blockId = world.getBlock(x, y + 1, z);
+		if (blockId != 0 && blockId == Block.SNOW_LAYER.id)
+			offset += Block.BY_ID[blockId].getCollisionShape(world, x, y+1, z).maxY;
 
 		cache.put(new Provider.Pos(x, y+1, z), new DoubleIntMutablePair(offset, color));
 	}
 
 	@Override
-	public void render(float partialTicks) {
-		Minecraft minecraft = Minecraft.getMinecraft();
-		ICamera camera = minecraft.activeCamera;
+	public void render(float tickDelta) {
+		Minecraft minecraft = MinecraftInstanceAccessor.getMinecraft();
+		LivingEntity camera = minecraft.camera;
 		if (camera == null) return;
 
 		GL11.glPushMatrix();
@@ -56,15 +55,13 @@ public class CrossMode extends LightyMode<Provider.Pos, DoubleIntMutablePair> {
 			GL11.glEnable(GL11.GL_BLEND);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 
-		if (LightmapHelper.isLightmapEnabled()) {
-			Integer light = Config.OVERLAY_BRIGHTNESS.getValue();
-			LightmapHelper.setLightmapCoord(light, light);
-		}
+		float brightness = minecraft.world.dimension.brightnessTable[Config.OVERLAY_BRIGHTNESS.getValue()];
 
 		cache.forEach((pos, data) -> {
-			double x = pos.x + 0.44 - camera.getX(partialTicks);
-			double y = pos.y + data.getLeft() + 0.01 - camera.getY(partialTicks);
-			double z = pos.z + 0.562 - camera.getZ(partialTicks);
+			Vec3d cameraPosition = camera.lerpPosition(tickDelta);
+			double x = pos.x + 0.44 - cameraPosition.x;
+			double y = pos.y + data.leftDouble() + 0.01 - cameraPosition.y;
+			double z = pos.z + 0.562 - cameraPosition.z;
 
 			GL11.glPushMatrix();
 			GL11.glTranslated(x, y, z);
@@ -72,7 +69,7 @@ public class CrossMode extends LightyMode<Provider.Pos, DoubleIntMutablePair> {
 			GL11.glRotated(45, 0, 0, 1);
 			GL11.glScalef(2.85f/32f, -2.85f/32f, 2.85f/32f);
 
-			drawCross(data.getRight());
+			drawCross(data.rightInt(), brightness);
 
 			GL11.glPopMatrix();
 		});
@@ -83,16 +80,16 @@ public class CrossMode extends LightyMode<Provider.Pos, DoubleIntMutablePair> {
 		GL11.glPopMatrix();
 	}
 
-	private static void drawCross(int color) {
+	private static void drawCross(int color, float brightness) {
 		GL11.glLineWidth(Config.OVERLAY_LINE_THICKNESS.getValue());
 
 		BufferBuilder bufferBuilder = BufferBuilder.INSTANCE;
 		bufferBuilder.start(GL11.GL_LINES);
 		bufferBuilder.color(
-			(color >> 16) & 0xFF,
-			(color >> 8) & 0xFF,
-			color & 0xFF,
-			(int) (2.55 * Config.OVERLAY_TRANSPARENCY.getValue())
+			(int) (((color >> 16) & 0xFF) * brightness),
+			(int) (((color >> 8) & 0xFF) * brightness),
+			(int) ((color & 0xFF) * brightness),
+			(int) (2.55f * Config.OVERLAY_TRANSPARENCY.getValue())
 		);
 
 		bufferBuilder.vertex(-8, 1, 0);

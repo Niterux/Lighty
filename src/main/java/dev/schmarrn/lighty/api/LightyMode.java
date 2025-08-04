@@ -1,6 +1,7 @@
 package dev.schmarrn.lighty.api;
 
 import net.minecraft.client.world.MultiplayerWorld;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.ApiStatus;
 
 /**
@@ -57,7 +58,7 @@ public abstract class LightyMode<K, V> {
 	 * @param y The y position of the block that need re-computing.
 	 * @param z The z position of the block that need re-computing.
      */
-    public abstract void compute(MultiplayerWorld world, int x, int y, int z);
+    public abstract void compute(World world, int x, int y, int z);
 
     /**
      * Implement the render method to display the data which you've stored in `cache` in `compute()`.<br/>

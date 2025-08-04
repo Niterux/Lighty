@@ -3,7 +3,7 @@ package dev.schmarrn.lighty.config;
 import net.minecraft.client.gui.options.components.BooleanOptionComponent;
 import net.minecraft.client.gui.options.components.ButtonComponent;
 import net.minecraft.client.option.OptionBoolean;
-import net.minecraft.core.lang.I18n;
+import net.minecraft.locale.LanguageManager;
 
 public class BooleanConfig extends ConfigType<Boolean> {
 	@Override
@@ -22,8 +22,8 @@ public class BooleanConfig extends ConfigType<Boolean> {
 
 				@Override
 				public String getDisplayStringValue() {
-					I18n i18n = I18n.getInstance();
-					return  i18n.translateKey(getValue() ? "options.on" : "options.off");
+					LanguageManager i18n = LanguageManager.getInstance();
+					return  i18n.translate(getValue() ? "options.on" : "options.off");
 				}
 			}
 		);
@@ -34,12 +34,12 @@ public class BooleanConfig extends ConfigType<Boolean> {
 	}
 
 	@Override
-	String serialize() {
+	public String serialize() {
 		return Boolean.toString(getValue());
 	}
 
 	@Override
-	void deserialize(String value) {
+	public void deserialize(String value) {
 		setValue(Boolean.valueOf(value));
 	}
 }

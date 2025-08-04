@@ -13,12 +13,12 @@ public class StringConfig extends ConfigType<String> {
 	}
 
 	@Override
-	String serialize() {
+	public String serialize() {
 		return getValue();
 	}
 
 	@Override
-	void deserialize(String value) {
+	public void deserialize(String value) {
 		setValue(value);
 	}
 }

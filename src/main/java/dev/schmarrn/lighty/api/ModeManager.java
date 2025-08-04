@@ -3,7 +3,6 @@ package dev.schmarrn.lighty.api;
 import dev.schmarrn.lighty.ModeLoader;
 import dev.schmarrn.lighty.ui.LightyConfigScreen;
 import dev.schmarrn.lighty.ui.ModeSwitcherScreen;
-import net.minecraft.client.gui.options.components.OptionsComponent;
 
 import java.util.function.Supplier;
 
@@ -31,7 +30,7 @@ public class ModeManager {
 
     /**
      * Adds options to the lighty config screens modes section.
-     * This must be called the `afterGameStart` entrypoint.
+     * This must be called before the {@link net.ornithemc.osl.lifecycle.api.MinecraftEvents#READY} event.
      */
     @SafeVarargs
     public static void addOptions(Supplier<OptionsComponent>... components) {

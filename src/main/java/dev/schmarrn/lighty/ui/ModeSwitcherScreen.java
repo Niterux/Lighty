@@ -3,8 +3,8 @@ package dev.schmarrn.lighty.ui;
 import dev.schmarrn.lighty.SMACH;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ButtonElement;
-import net.minecraft.client.gui.Screen;
 import net.minecraft.client.gui.TooltipElement;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.core.lang.I18n;
 
 import java.util.ArrayList;
@@ -52,7 +52,7 @@ public class ModeSwitcherScreen extends Screen {
 	public void render(int mx, int my, float partialTick) {
 		I18n i18n = I18n.getInstance();
 		renderBackground();
-		drawStringCentered(Minecraft.getMinecraft().font, i18n.translateKey("gui.lighty.modeSwitcher.title"), this.width/2, START_HEIGHT, 0xFFFFFF);
+		drawStringCentered(MinecraftInstanceAccessor.getMinecraft().font, i18n.translateKey("gui.lighty.modeSwitcher.title"), this.width/2, START_HEIGHT, 0xFFFFFF);
 		super.render(mx, my, partialTick);
 
 		for (ButtonElement button : buttons) {
@@ -70,7 +70,7 @@ public class ModeSwitcherScreen extends Screen {
 				SMACH.toggle();
 				buttons.get(0).displayString = getStatus();
 			} else if (button.id == 1) {
-				Minecraft minecraft = Minecraft.getMinecraft();
+				Minecraft minecraft = MinecraftInstanceAccessor.getMinecraft();
 				minecraft.displayScreen(null);
 			} else {
 				Mode mode = MODES.get(button.id - 2);

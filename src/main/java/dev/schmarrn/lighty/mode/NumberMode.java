@@ -4,7 +4,9 @@ import dev.schmarrn.lighty.Lighty;
 import dev.schmarrn.lighty.api.LightyMode;
 import dev.schmarrn.lighty.api.ModeManager;
 import dev.schmarrn.lighty.config.Config;
+import dev.schmarrn.lighty.mixin.accessors.MinecraftInstanceAccessor;
 import it.unimi.dsi.fastutil.ints.IntIntMutablePair;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.options.components.OptionsCategory;
 import net.minecraft.client.render.LightmapHelper;
@@ -14,6 +16,8 @@ import net.minecraft.client.world.MultiplayerWorld;
 import net.minecraft.core.block.Block;
 import net.minecraft.core.util.collection.Pair;
 import net.minecraft.core.util.phys.AABB;
+import net.minecraft.entity.living.LivingEntity;
+import net.minecraft.util.math.Vec3d;
 import org.lwjgl.opengl.GL11;
 
 public class NumberMode extends LightyMode<Provider.Pos, NumberMode.Data> {
@@ -41,19 +45,17 @@ public class NumberMode extends LightyMode<Provider.Pos, NumberMode.Data> {
 
 		double offset = 0;
 
-		Block<?> block = world.getBlock(x, y + 1, z);
-		if (block != null) {
-			AABB bounds = block.getBlockBoundsFromState(world, x, y + 1, z);
-			offset += block.getBlockBoundsFromState(world, x, y+1, z).maxY;
-		}
+		int blockId = world.getBlock(x, y + 1, z);
+		if (blockId != 0 && blockId == Block.SNOW_LAYER.id)
+			offset += Block.BY_ID[blockId].getCollisionShape(world, x, y+1, z).maxY;
 
-		cache.put(new Provider.Pos(x, y+1, z), new Data(light.getLeft(), light.getRight(), offset, color));
+		cache.put(new Provider.Pos(x, y+1, z), new Data(light.leftInt(), light.rightInt(), offset, color));
 	}
 
 	@Override
-	public void render(float partialTicks) {
-		Minecraft minecraft = Minecraft.getMinecraft();
-		ICamera camera = minecraft.activeCamera;
+	public void render(float tickDelta) {
+		Minecraft minecraft = MinecraftInstanceAccessor.getMinecraft();
+		LivingEntity camera = minecraft.camera;
 		if (camera == null) return;
 
 		GL11.glPushMatrix();
@@ -66,9 +68,10 @@ public class NumberMode extends LightyMode<Provider.Pos, NumberMode.Data> {
 		}
 
 		cache.forEach((pos, data) -> {
-			double x = pos.x + 0.5 - camera.getX(partialTicks);
-			double y = pos.y + 0.05 - camera.getY(partialTicks);
-			double z = pos.z + 0.5 - camera.getZ(partialTicks);
+			Vec3d cameraPosition = camera.lerpPosition(tickDelta);
+			double x = pos.x + 0.5 - cameraPosition.x;
+			double y = pos.y + 0.05 - cameraPosition.y;
+			double z = pos.z + 0.5 - cameraPosition.z;
 
 			if (Config.SHOW_ABOVE_HITBOX.getValue())
 				y += data.offset;
@@ -77,7 +80,7 @@ public class NumberMode extends LightyMode<Provider.Pos, NumberMode.Data> {
 			GL11.glTranslated(x, y, z);
 			GL11.glScalef(1f/32f, -1f/32f, 1f/32f);
 			GL11.glRotated(90, 1, 0, 0);
-			GL11.glRotated(camera.getYRot()-180, 0, 0, 1);
+			GL11.glRotated(camera.cameraPitch-180, 0, 0, 1);
 
 			float offset = Config.SHOW_SKYLIGHT_LEVEL.getValue() ? 4.5f : 0f;
 
@@ -112,7 +115,7 @@ public class NumberMode extends LightyMode<Provider.Pos, NumberMode.Data> {
 		int x = (light % 4) * 8;
 		int y = (light / 4) * 8;
 
-		Minecraft.getMinecraft().textureManager.loadTexture("/assets/lighty/textures/block/numbers.png").bind();
+		MinecraftInstanceAccessor.getMinecraft().textureManager.loadTexture("/assets/lighty/textures/block/numbers.png").bind();
 		drawTexture(-2.5f + x_offset, -3f + y_offset, 0, x, y, 8, 8, color);
 	}
 
