@@ -1,17 +1,17 @@
 package dev.schmarrn.lighty.ui.screen;
 
 import dev.schmarrn.lighty.SMACH;
-import dev.schmarrn.lighty.config.Mode;
 import dev.schmarrn.lighty.mixin.accessors.MinecraftInstanceAccessor;
+import it.unimi.dsi.fastutil.objects.ObjectObjectImmutablePair;
+import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.locale.LanguageManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ModeSwitcherScreen extends Screen {
-	private static final List<Mode> MODES = new ArrayList<>();
+	private static final List<ObjectObjectImmutablePair<String, Runnable>> MODES = new ReferenceArrayList<>();
 
 	private static final int START_HEIGHT = 15;
 	private static final int DELTA_HEIGHT = 24;
@@ -26,9 +26,9 @@ public class ModeSwitcherScreen extends Screen {
 
 		height += 6;
 		int index = 0;
-		for (Mode mode : MODES) {
+		for (ObjectObjectImmutablePair<String, Runnable> mode : MODES) {
 			height += DELTA_HEIGHT;
-			buttons.add(new ButtonWidget(index + 2, this.width / 2 - 75, height, 150, 20, languageManager.translate(mode.title())));
+			buttons.add(new ButtonWidget(index + 2, this.width / 2 - 75, height, 150, 20, languageManager.translate("gui.modeSwitcher." + mode.left())));
 			index++;
 		}
 
@@ -59,14 +59,13 @@ public class ModeSwitcherScreen extends Screen {
 			} else if (button.id == 1) {
 				minecraft.openScreen(null);
 			} else {
-				Mode mode = MODES.get(button.id - 2);
-				mode.onPress().run();
+				MODES.get(button.id - 2).right().run();
 				buttons.get(0).message = getStatus();
 			}
 		}
 	}
 
-	public static void addButton(String title, Runnable onPress) {
-		MODES.add(new Mode(title, onPress));
+	public static void addButton(String id, Runnable onPress) {
+		MODES.add(new ObjectObjectImmutablePair<>(id, onPress));
 	}
 }

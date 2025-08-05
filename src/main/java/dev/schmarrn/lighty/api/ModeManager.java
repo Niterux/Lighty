@@ -23,18 +23,18 @@ public class ModeManager {
         ModeLoader.put(id, mode);
 
         ModeSwitcherScreen.addButton(
-			"gui.modeSwitcher."+id, () -> ModeLoader.loadMode(id)
+			id, () -> ModeLoader.loadMode(id)
         );
     }
 
-    /**
+/*    *//**
      * Adds options to the lighty config screens modes section.
      * This must be called before the {@link net.ornithemc.osl.lifecycle.api.MinecraftEvents#READY} event.
-     */
+     *//*
     @SafeVarargs
     public static void addOptions(Supplier<OptionsComponent>... components) {
         LightyConfigScreen.addModeOption(components);
-    }
+    }*/
 
     private ModeManager() {}
 }

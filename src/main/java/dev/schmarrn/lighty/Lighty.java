@@ -5,10 +5,9 @@ import dev.schmarrn.lighty.config.Config;
 import dev.schmarrn.lighty.event.Compute;
 import dev.schmarrn.lighty.event.KeyBind;
 import dev.schmarrn.lighty.event.Render;
-import dev.schmarrn.lighty.mode.CarpetMode;
+//import dev.schmarrn.lighty.mode.CarpetMode;
 import dev.schmarrn.lighty.mode.CrossMode;
 import dev.schmarrn.lighty.mode.NumberMode;
-import dev.schmarrn.lighty.ui.screen.LightyConfigScreen;
 import net.minecraft.client.Minecraft;
 import net.ornithemc.osl.entrypoints.api.client.ClientModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
@@ -31,7 +30,7 @@ public class Lighty implements ClientModInitializer {
 		Compute.init();
 		Render.init();
 
-		CarpetMode.init();
+		//CarpetMode.init();
 		CrossMode.init();
 		NumberMode.init();
 		FabricLoader.getInstance().getEntrypoints("lightyModesRegistration", LightyModesRegistration.class).forEach(LightyModesRegistration::registerLightyModes);
@@ -42,6 +41,5 @@ public class Lighty implements ClientModInitializer {
 
 	public void afterClientStart(Minecraft minecraft) {
 		KeyBind.register();
-		LightyConfigScreen.register();
 	}
 }

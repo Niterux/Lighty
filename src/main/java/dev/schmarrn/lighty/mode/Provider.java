@@ -7,6 +7,7 @@ import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.util.Color;
 
 public class Provider {
 	public static boolean isBlocked(int x, int y, int z, World world) {
@@ -31,12 +32,12 @@ public class Provider {
 		return new IntIntMutablePair(blockLightLevel, skyLightLevel);
 	}
 
-	public static @Nullable Integer getColor(IntIntMutablePair light) {
+	public static @Nullable Color getColor(IntIntMutablePair light) {
 		return getColor(light.leftInt(), light.rightInt());
 	}
 
-	public static @Nullable Integer getColor(int blockLightLevel, int skyLightLevel) {
-		int color =  Config.OVERLAY_GREEN.getValue();
+	public static @Nullable Color getColor(int blockLightLevel, int skyLightLevel) {
+		Color color =  Config.OVERLAY_GREEN.getValue();
 
 		if (blockLightLevel <= Config.BLOCK_THRESHOLD.getValue()) {
 			if (skyLightLevel <= Config.SKY_THRESHOLD.getValue()) {

@@ -6,6 +6,7 @@ import dev.schmarrn.lighty.api.ModeManager;
 import dev.schmarrn.lighty.config.Config;
 import dev.schmarrn.lighty.mixin.accessors.MinecraftInstanceAccessor;
 import it.unimi.dsi.fastutil.doubles.DoubleIntMutablePair;
+import it.unimi.dsi.fastutil.doubles.DoubleObjectMutablePair;
 import it.unimi.dsi.fastutil.ints.IntIntMutablePair;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -14,8 +15,9 @@ import net.minecraft.entity.living.LivingEntity;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Color;
 
-public class CrossMode extends LightyMode<Provider.Pos, DoubleIntMutablePair> {
+public class CrossMode extends LightyMode<Provider.Pos, DoubleObjectMutablePair<Color>> {
 
 	public static void init() {
 		ModeManager.registerMode(Lighty.MOD_ID+".cross_mode", new CrossMode());
@@ -29,7 +31,7 @@ public class CrossMode extends LightyMode<Provider.Pos, DoubleIntMutablePair> {
 		IntIntMutablePair light = Provider.compute(world, x, y, z);
 		if (light == null) return;
 
-		Integer color = Provider.getColor(light);
+		Color color = Provider.getColor(light);
 		if (color == null) return;
 
 		double offset = 0;
@@ -38,7 +40,7 @@ public class CrossMode extends LightyMode<Provider.Pos, DoubleIntMutablePair> {
 		if (blockId != 0 && blockId == Block.SNOW_LAYER.id)
 			offset += Block.BY_ID[blockId].getCollisionShape(world, x, y+1, z).maxY;
 
-		cache.put(new Provider.Pos(x, y+1, z), new DoubleIntMutablePair(offset, color));
+		cache.put(new Provider.Pos(x, y+1, z), new DoubleObjectMutablePair<Color>(offset, color));
 	}
 
 	@Override
@@ -66,7 +68,7 @@ public class CrossMode extends LightyMode<Provider.Pos, DoubleIntMutablePair> {
 			GL11.glRotated(45, 0, 0, 1);
 			GL11.glScalef(2.85f/32f, -2.85f/32f, 2.85f/32f);
 
-			drawCross(data.rightInt(), brightness);
+			drawCross(data.right(), brightness);
 
 			GL11.glPopMatrix();
 		});
@@ -77,15 +79,15 @@ public class CrossMode extends LightyMode<Provider.Pos, DoubleIntMutablePair> {
 		GL11.glPopMatrix();
 	}
 
-	private static void drawCross(int color, float brightness) {
+	private static void drawCross(Color color, float brightness) {
 		GL11.glLineWidth(Config.OVERLAY_LINE_THICKNESS.getValue());
 
 		BufferBuilder bufferBuilder = BufferBuilder.INSTANCE;
 		bufferBuilder.start(GL11.GL_LINES);
 		bufferBuilder.color(
-			(int) (((color >> 16) & 0xFF) * brightness),
-			(int) (((color >> 8) & 0xFF) * brightness),
-			(int) ((color & 0xFF) * brightness),
+			(int) (color.getRed() * brightness),
+			(int) (color.getGreen() * brightness),
+			(int) (color.getBlue() * brightness),
 			(int) (2.55f * Config.OVERLAY_TRANSPARENCY.getValue())
 		);
 

@@ -12,9 +12,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = Minecraft.class, remap = false)
+@Mixin(Minecraft.class)
 public abstract class MinecraftMixin {
-	@ModifyExpressionValue(method = "tick()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Keyboard;getEventKey()I", ordinal = 2))
+	@ModifyExpressionValue(method = "tick()V", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Keyboard;getEventKey()I", ordinal = 2, remap = false))
 	private int lighty$keybindHandler(int keyCode) {
 		KeyBind.callback(keyCode);
 		return keyCode;

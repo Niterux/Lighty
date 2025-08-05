@@ -4,12 +4,7 @@ import dev.schmarrn.lighty.SMACH;
 import dev.schmarrn.lighty.mixin.accessors.MinecraftInstanceAccessor;
 import dev.schmarrn.lighty.ui.screen.ModeSwitcherScreen;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.options.components.KeyBindingComponent;
-import net.minecraft.client.gui.options.components.OptionsCategory;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.option.GameSettings;
 import net.minecraft.client.options.KeyBinding;
-import org.jetbrains.annotations.Nullable;
 import org.lwjgl.input.Keyboard;
 
 public class KeyBind {
@@ -18,13 +13,10 @@ public class KeyBind {
 
 	public static void callback(int keyCode) {
 		Minecraft minecraft = MinecraftInstanceAccessor.getMinecraft();
-		@Nullable Screen currentScreen = minecraft.screen;
-
-		if(keyCode == enable.keyCode && currentScreen == null)
+		if (keyCode == enable.keyCode)
 			minecraft.openScreen(new ModeSwitcherScreen());
-		if(keyCode == enable.keyCode && currentScreen == null)
+		if (keyCode == toggle.keyCode)
 			SMACH.toggle();
-
 	}
 
 	public static void init() {
@@ -33,12 +25,12 @@ public class KeyBind {
 	}
 
 	public static void register() {
-		GameSettings.keys.add(enable);
+/*		GameSettings.keys.add(enable);
 		GameSettings.keys.add(toggle);
 
 		GameOptionss.CONTROLS
 			.withComponent(new OptionsCategory("category.lighty")
 				.withComponent(new KeyBindingComponent(enable))
-				.withComponent(new KeyBindingComponent(toggle)));
+				.withComponent(new KeyBindingComponent(toggle)));*/
 	}
 }

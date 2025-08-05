@@ -1,3 +1,4 @@
+/*
 package dev.schmarrn.lighty.mode;
 
 import dev.schmarrn.lighty.Lighty;
@@ -7,15 +8,12 @@ import dev.schmarrn.lighty.config.Config;
 import dev.schmarrn.lighty.mixin.accessors.MinecraftInstanceAccessor;
 import it.unimi.dsi.fastutil.doubles.DoubleIntMutablePair;
 import it.unimi.dsi.fastutil.ints.IntIntMutablePair;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.options.components.OptionsCategory;
 import net.minecraft.client.render.LightmapHelper;
 import net.minecraft.client.render.camera.ICamera;
 import net.minecraft.client.render.tessellator.Tessellator;
 import net.minecraft.client.world.MultiplayerWorld;
-import net.minecraft.core.block.Block;
-import net.minecraft.core.block.Blocks;
-import net.minecraft.core.util.collection.Pair;
 import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 
@@ -25,10 +23,7 @@ public class CarpetMode extends LightyMode<Provider.Pos, DoubleIntMutablePair> {
 
 	public static void init() {
 		ModeManager.registerMode(Lighty.MOD_ID+".carpet_mode", new CarpetMode());
-		ModeManager.addOptions(
-				() -> new OptionsCategory("gui.modeSwitcher."+Lighty.MOD_ID+".carpet_mode")
-						.withComponent(Config.FLAT_CARPET.getOptionInstance())
-		);
+		Config.MODE_SPECIFIC_OPTIONS.add(Config.FLAT_CARPET);
 	}
 
 	@Override
@@ -43,25 +38,25 @@ public class CarpetMode extends LightyMode<Provider.Pos, DoubleIntMutablePair> {
 
 		double offset = 0;
 
-		Block<?> block = world.getBlock(x, y+1, z);
-		if (block != null && block.id() == Blocks.LAYER_SNOW.id())
-			offset += block.getBlockBoundsFromState(world, x, y+1, z).maxY;
+		int blockId = world.getBlock(x, y + 1, z);
+		if (blockId != 0 && blockId == Block.SNOW_LAYER.id)
+			offset += Block.BY_ID[blockId].getCollisionShape(world, x, y+1, z).maxY;
 
 		cache.put(new Provider.Pos(x, y+1, z), new DoubleIntMutablePair(offset, color));
 	}
 
 	private static boolean shouldRenderSideFace(int x, int y, int z, MultiplayerWorld world, double originalHeight) {
-		Block<?> block = world.getBlock(x, y, z);
+		int blockId = world.getBlock(x, y, z);
 		if (originalHeight > 0.0) {
 			// the original block is a snow layer
-			if (block != null && block.id() == Blocks.LAYER_SNOW.id()) {
+			if (blockId == Block.SNOW_LAYER.id) {
 				// if the other block is a snow layer,
 				// we should render the face if we are strictly above the neighbor
-				return originalHeight > block.getBlockBoundsFromState(world, x, y, z).maxY;
+				return originalHeight > Block.BY_ID[blockId].getCollisionShape(world, x, y, z).maxY;
 			} else {
 				// if the other block is no snow layer, but air,
 				// we should render the side.
-				return block == null;
+				return blockId == 0;
 			}
 		}
 		// if it isn't a snow layer,
@@ -162,3 +157,4 @@ public class CarpetMode extends LightyMode<Provider.Pos, DoubleIntMutablePair> {
 		tessellator.draw();
 	}
 }
+*/

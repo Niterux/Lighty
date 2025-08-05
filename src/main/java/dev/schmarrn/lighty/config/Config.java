@@ -22,23 +22,26 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.lwjgl.util.Color;
 
 public class Config {
+	private static final HashMap<String, ConfigSerDe> configValues = new HashMap<>();
+	private static final HashMap<String, String> fileState = new HashMap<>();
 	public static final ArrayList<ConfigType<?>> GLOBAL_OPTIONS = new ArrayList<>();
 	public static final ArrayList<ConfigType<?>> MODE_SPECIFIC_OPTIONS = new ArrayList<>();
 	// all the different config values
 	public static final StringConfig LAST_USED_RENDERER = new StringConfig("lighty.last_used_renderer", "lighty:renderer_carpet");
-	public static final IntegerConfig SKY_THRESHOLD = new IntegerConfig("lighty.sky_threshold", 0, 0, 15);
-	public static final IntegerConfig BLOCK_THRESHOLD = new IntegerConfig("lighty.block_threshold", 0, 0, 15);
+	public static final IntegerConfig SKY_THRESHOLD = new IntegerConfig("lighty.sky_threshold", 7, 0, 15);
+	public static final IntegerConfig BLOCK_THRESHOLD = new IntegerConfig("lighty.block_threshold", 7, 0, 15);
 	public static final IntegerConfig OVERLAY_DISTANCE = new IntegerConfig("lighty.overlay_distance", 2, 1, 32);
 	public static final IntegerConfig OVERLAY_BRIGHTNESS = new IntegerConfig("lighty.overlay_brightness", 15, 0, 15);
 	public static final IntegerConfig OVERLAY_TRANSPARENCY = new IntegerConfig("lighty.overlay_transparency", 60, 0, 100);
 	public static final IntegerConfig OVERLAY_LINE_THICKNESS = new IntegerConfig("lighty.overlay_line_thickness", 2, 0, 15);
 	public static final BooleanConfig SHOW_SAFE = new BooleanConfig("lighty.show_safe", true);
 	public static final BooleanConfig FLAT_CARPET = new BooleanConfig("lighty.flat_carpet", false);
-	public static final ColorConfig OVERLAY_GREEN = new ColorConfig("lighty.overlay_green", Color.fromInt(0x00FF0000));
-	public static final ColorConfig OVERLAY_ORANGE = new ColorConfig("lighty.overlay_orange", Color.fromInt(0xFF660000));
-	public static final ColorConfig OVERLAY_RED = new ColorConfig("lighty.overlay_red", Color.fromInt(0xFF000000));
+	public static final ColorConfig OVERLAY_GREEN = new ColorConfig("lighty.overlay_green", new Color(0, 255, 0));
+	public static final ColorConfig OVERLAY_ORANGE = new ColorConfig("lighty.overlay_orange", new Color(255, 102, 0));
+	public static final ColorConfig OVERLAY_RED = new ColorConfig("lighty.overlay_red", new Color(255, 0, 0));
 	public static final StringListConfig AUTO_ON_ITEM_LIST = new StringListConfig("lighty.auto_on.item", Arrays.asList(
 		"torch"
 	));
@@ -46,14 +49,13 @@ public class Config {
 	public static final BooleanConfig SHOW_SKYLIGHT_LEVEL = new BooleanConfig("lighty.show_skylight_level", true);
 	public static final BooleanConfig SHOW_ABOVE_HITBOX = new BooleanConfig("lighty.show_above_hitbox", true);
 	public static final StringConfig CARPET_TEXTURE = new StringConfig("lighty.mode.carpet.texture", "/assets/lighty/textures/block/transparent.png");
-	static {
-		Collections.addAll(GLOBAL_OPTIONS, SHOW_SAFE, SHOULD_AUTO_ON, OVERLAY_DISTANCE, OVERLAY_BRIGHTNESS, OVERLAY_TRANSPARENCY, SKY_THRESHOLD, BLOCK_THRESHOLD);
-	}
 	// Internal variables tracking config state
 	private static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve(Lighty.MOD_ID).resolve("base.config");
-	private static final Map<String, String> fileState = new HashMap<>();
-	private static final Map<String, ConfigSerDe> configValues = new HashMap<>();
 	private static boolean initStage = true;
+
+	static {
+		Collections.addAll(GLOBAL_OPTIONS,OVERLAY_GREEN, SHOW_SAFE, SHOULD_AUTO_ON, OVERLAY_DISTANCE, OVERLAY_BRIGHTNESS, OVERLAY_TRANSPARENCY, SKY_THRESHOLD, BLOCK_THRESHOLD);
+	}
 
 	private static void loadFromFile(String key, ConfigSerDe type) {
 		// If the file contains the config value, get the configured value...
@@ -110,7 +112,7 @@ public class Config {
 		}
 
 		try {
-			Files.createDirectories(PATH);
+			Files.createDirectories(PATH.getParent());
 		} catch (IOException e) {
 			Lighty.LOGGER.error("UNABLE TO CREATE LIGHTY CONFIG DIRECTORY: ", e);
 		}
