@@ -10,7 +10,6 @@ import net.minecraft.locale.LanguageManager;
 import java.text.MessageFormat;
 
 public class LightyConfigScreen extends Screen {
-	private static final LanguageManager languageManager = LanguageManager.getInstance();
 	private final Screen parent;
 
 	public LightyConfigScreen(Screen parent) {
@@ -19,7 +18,7 @@ public class LightyConfigScreen extends Screen {
 	}
 
 	private static String translate(String pattern) {
-		return languageManager.translate(MessageFormat.format(pattern, Lighty.MOD_ID));
+		return Lighty.LANGUAGE_MANAGER.translate(MessageFormat.format(pattern, Lighty.MOD_ID));
 	}
 
 	@Override
@@ -31,6 +30,7 @@ public class LightyConfigScreen extends Screen {
 
 	@Override
 	public void render(int mouseX, int mouseY, float tickDelta) {
+		super.renderBackground();
 		super.render(mouseX, mouseY, tickDelta);
 		this.drawCenteredString(this.textRenderer, translate("gui.{0}.options.title"), this.width / 2, this.height / 4 - 40, 0xFFFFFF);
 	}
@@ -46,10 +46,10 @@ public class LightyConfigScreen extends Screen {
 		super.buttonClicked(button);
 		switch (button.id) {
 			case 1:
-				minecraft.openScreen(new GlobalConfigScreen());
+				minecraft.openScreen(new GlobalConfigScreen(minecraft.screen));
 				break;
 			case 2:
-				minecraft.openScreen(new ModeSpecificsConfigScreen());
+				minecraft.openScreen(new ModeSpecificsConfigScreen(minecraft.screen));
 				break;
 			case 3:
 				minecraft.openScreen(this.parent);

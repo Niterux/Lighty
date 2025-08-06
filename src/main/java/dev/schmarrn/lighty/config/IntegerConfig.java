@@ -7,16 +7,19 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 
 public class IntegerConfig extends ConfigType<Integer> {
 	private final int min, max;
-	@Override
-	public OptionWidget<Integer> getOptionInstance(OptionsScreen optionsScreen) {
-		return null;
-	}
 
 	public IntegerConfig(String key, Integer defaultValue, int min, int max) {
 		super(key, defaultValue);
 		this.min = min;
 		this.max = max;
 	}
+
+	@Override
+	public OptionWidget<Integer> getOptionInstance() {
+		return null;
+	}
+
+
 
 	public int getMax() {
 		return this.max;

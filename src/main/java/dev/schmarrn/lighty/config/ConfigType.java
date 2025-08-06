@@ -41,13 +41,13 @@ public abstract class ConfigType<T> implements ConfigSerDe {
 		return KEY;
 	}
 
-	public abstract OptionWidget<T> getOptionInstance(OptionsScreen optionsScreen);
+	public abstract OptionWidget<T> getOptionInstance();
 
-	protected String getTranslationKey() {
+	public String getTranslationKey() {
 		return KEY.replaceFirst("\\.", ".options.");
 	}
 
-	protected String getTranslationTooltipKey() {
+	public String getTranslationTooltipKey() {
 		return getTranslationKey() + ".tooltip";
 	}
 }

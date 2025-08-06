@@ -1,7 +1,8 @@
 package dev.schmarrn.lighty.ui.screen;
 
+import dev.schmarrn.lighty.Lighty;
 import dev.schmarrn.lighty.config.ConfigType;
-import dev.schmarrn.lighty.ui.widget.OptionWidget;
+import dev.schmarrn.lighty.ui.widget.ListedWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -10,60 +11,81 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class OptionsScreen extends Screen {
-	private int currentButtonId;
-	public int getNextButtonId() {
-		return currentButtonId++;
+	private final int WIDGET_VERTICAL_MARGIN = 5;
+	private final int WIDGET_RIGHT_MARGIN = 20;
+	private final int LIST_MIDDLE_PADDING = 20;
+	private final int LIST_START_HEIGHT = 20;
+	private final int WIDGET_HEIGHT = 20;
+	private final int DESCRIPTION_VERTICAL_ALIGNMENT = WIDGET_HEIGHT / 2 - 4;
+	private final ArrayList<ListedWidget> widgetList = new ArrayList<>();
+	private final Screen parent;
+
+	public OptionsScreen(Screen parent) {
+		this.parent = parent;
+		for (ConfigType<?> configType : getOptionList()) {
+			ListedWidget widget = configType.getOptionInstance();
+			if (widget == null)
+				continue;
+			widgetList.add(widget);
+		}
 	}
-	public int getCurrentButtonId() {
-		return currentButtonId;
-	}
-	public int getWidgetX(int id) {
-		return width / 2;
-	}
-	public int getWidgetY(int id) {
-		return id * 20;
-	}
-	public int getWidgetWidth(int id) {
-		return 200;
-	}
-	public int getWidgetHeight(int id) {
-		return 20;
-	}
-	public int getWidgetX() {
-		return getWidgetX(getCurrentButtonId());
-	}
-	public int getWidgetY() {
-		return getWidgetY(getCurrentButtonId());
-	}
-	public int getWidgetWidth() {
-		return getWidgetWidth(getCurrentButtonId());
-	}
-	public int getWidgetHeight() {
-		return getWidgetHeight(getCurrentButtonId());
-	}
+
 
 	@Override
 	public void render(int mouseX, int mouseY, float tickDelta) {
 		super.renderBackground();
 		super.render(mouseX, mouseY, tickDelta);
+		for (ListedWidget listedWidget : widgetList) {
+			listedWidget.setHovered(mouseX, mouseY);
+			listedWidget.render(minecraft);
+			String description = Lighty.LANGUAGE_MANAGER.translate(listedWidget.getDescription());
+			drawString(textRenderer, description, (width - LIST_MIDDLE_PADDING) / 2 - textRenderer.getWidth(description), listedWidget.y + DESCRIPTION_VERTICAL_ALIGNMENT, 0xFFFFFFFF);
+		}
+	}
+
+	@Override
+	protected void keyPressed(char chr, int key) {
+		super.keyPressed(chr, key);
+		for (ListedWidget listedWidget : widgetList)
+			if (listedWidget.focused)
+				listedWidget.onFocusedKeypress(chr, key);
+	}
+
+	@Override
+	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+		super.mouseClicked(mouseX, mouseY, mouseButton);
+		if (mouseButton != 0)
+			return;
+		for (ListedWidget listedWidget : widgetList) {
+			listedWidget.focused = false;
+			if (!listedWidget.hovered)
+				continue;
+			listedWidget.onClick();
+			listedWidget.focused = true;
+		}
 	}
 
 	@Override
 	protected void buttonClicked(ButtonWidget button) {
 		super.buttonClicked(button);
-		if(button instanceof OptionWidget)
-			((OptionWidget<?>)button).onClick();
+		if(button.id == 0)
+			minecraft.openScreen(this.parent);
 	}
 
 	@Override
 	public void init(Minecraft minecraft, int width, int height) {
 		super.init(minecraft, width, height);
-		currentButtonId = 0;
-		for(ConfigType<?> configType : getOptionList()) {
-			OptionWidget thing = configType.getOptionInstance(this);
-			if (thing != null)
-				buttons.add(thing);
+		int currentButtonIndex = 0;
+		for (ListedWidget listedWidget : widgetList) {
+			listedWidget.x = (width + LIST_MIDDLE_PADDING) / 2;
+			listedWidget.height = listedWidget.getPreferredHeight(WIDGET_HEIGHT);
+			listedWidget.y = currentButtonIndex * (WIDGET_HEIGHT + WIDGET_VERTICAL_MARGIN) + LIST_START_HEIGHT;
+			listedWidget.width = listedWidget.getPreferredWidth((width / 2) - WIDGET_RIGHT_MARGIN);
+			currentButtonIndex++;
 		}
+		ButtonWidget backButton = new ButtonWidget(0, width - 220, height - 40, "Back");
+		buttons.add(backButton);
 	}
+
 	public abstract List<ConfigType<?>> getOptionList();
 }

@@ -13,7 +13,7 @@ public class StringListConfig extends ConfigType<List<String>> {
 	}
 
 	@Override
-	public OptionWidget<List<String>> getOptionInstance(OptionsScreen optionsScreen) {
+	public OptionWidget<List<String>> getOptionInstance() {
 		return null;
 	}
 

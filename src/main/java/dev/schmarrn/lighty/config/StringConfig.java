@@ -5,14 +5,16 @@ import dev.schmarrn.lighty.ui.widget.OptionWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 
 public class StringConfig extends ConfigType<String> {
+	StringConfig(String key, String defaultValue) {
+		super(key, defaultValue);
+	}
+
 	@Override
-	public OptionWidget<String> getOptionInstance(OptionsScreen optionsScreen) {
+	public OptionWidget<String> getOptionInstance() {
 		return null;
 	}
 
-	public StringConfig(String key, String defaultValue) {
-		super(key, defaultValue);
-	}
+
 
 	@Override
 	public String serialize() {

@@ -6,8 +6,8 @@ import dev.schmarrn.lighty.ui.widget.OptionWidget;
 
 public class BooleanConfig extends ConfigType<Boolean> {
 	@Override
-	public OptionWidget<Boolean> getOptionInstance(OptionsScreen optionsScreen) {
-		return new BooleanWidget(optionsScreen, this);
+	public OptionWidget<Boolean> getOptionInstance() {
+		return new BooleanWidget(this);
 	}
 
 	public BooleanConfig(String key, Boolean defaultValue) {
