@@ -3,6 +3,7 @@ package dev.schmarrn.lighty.mode;
 import dev.schmarrn.lighty.config.Config;
 import it.unimi.dsi.fastutil.ints.IntIntMutablePair;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.WorldChunk;
@@ -12,14 +13,16 @@ import org.lwjgl.util.Color;
 public class Provider {
 	public static boolean isBlocked(int x, int y, int z, World world) {
 		Block block = Block.BY_ID[world.getBlock(x, y, z)];
-
+		Material material;
+		if (block == null) {
+			material = Material.AIR;
+		} else {
+			material = block.material;
+		}
 		if (y < 0 || y > 127)
 			return true;
 
-		return (block != null && (block.material.isSolid()))
-			|| !(world.isRedstoneConductor(x, y-1, z)
-			&& !world.isRedstoneConductor(x, y, z)
-			&& !world.getMaterial(x, y, z).isLiquid());
+		return (material.isSolid()) || !(world.isRedstoneConductor(x, y-1, z) && !world.isRedstoneConductor(x, y, z) && !material.isLiquid());
 	}
 
 	public static @Nullable IntIntMutablePair compute(World world, int x, int y, int z) {
@@ -32,32 +35,30 @@ public class Provider {
 		return new IntIntMutablePair(blockLightLevel, skyLightLevel);
 	}
 
-	public static @Nullable Color getColor(IntIntMutablePair light) {
+	public static @Nullable ColorEnum getColor(IntIntMutablePair light) {
 		return getColor(light.leftInt(), light.rightInt());
 	}
 
-	public static @Nullable Color getColor(int blockLightLevel, int skyLightLevel) {
-		Color color =  Config.OVERLAY_GREEN.getValue();
-
+	public static @Nullable ColorEnum getColor(int blockLightLevel, int skyLightLevel) {
 		if (blockLightLevel <= Config.BLOCK_THRESHOLD.getValue()) {
 			if (skyLightLevel <= Config.SKY_THRESHOLD.getValue()) {
-				color =  Config.OVERLAY_RED.getValue();
+				return ColorEnum.UNSAFE;
 			} else {
-				color =  Config.OVERLAY_ORANGE.getValue();
+				return ColorEnum.DAYLIGHT_SAFE;
 			}
-		} else if (!Config.SHOW_SAFE.getValue()) {
-			return null;
 		}
+		if (!Config.SHOW_SAFE.getValue())
+			return null;
 
-		return color;
+		return ColorEnum.SAFE;
 	}
 
 	static class Pos {
-		public int x;
-		public int y;
-		public int z;
+		public double x;
+		public double y;
+		public double z;
 
-		public Pos(int x, int y, int z) {
+		public Pos(double x, double y, double z) {
 			this.x = x;
 			this.y = y;
 			this.z = z;

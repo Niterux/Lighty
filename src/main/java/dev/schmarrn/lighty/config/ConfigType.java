@@ -3,7 +3,7 @@ package dev.schmarrn.lighty.config;
 import dev.schmarrn.lighty.ui.screen.OptionsScreen;
 import dev.schmarrn.lighty.ui.widget.OptionWidget;
 
-public abstract class ConfigType<T> implements ConfigSerDe {
+public abstract class ConfigType<T> {
 	private final T DEFAULT_VALUE;
 	private final String KEY;
 	private T value;
@@ -50,4 +50,6 @@ public abstract class ConfigType<T> implements ConfigSerDe {
 	public String getTranslationTooltipKey() {
 		return getTranslationKey() + ".tooltip";
 	}
+	public abstract String serialize();
+	public abstract T deserialize(String value) throws DeserializationException;
 }

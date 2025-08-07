@@ -60,6 +60,11 @@ public abstract class LightyMode<K, V> {
      */
     public abstract void compute(World world, int x, int y, int z);
 
+	/**
+	 * If you need to do stuff before rendering but only if there's been a config change.
+	 */
+	public void initializeDrawLists() {}
+
     /**
      * Implement the render method to display the data which you've stored in `cache` in `compute()`.<br/>
      * This method is most likely to change with Lighty 2.0.0

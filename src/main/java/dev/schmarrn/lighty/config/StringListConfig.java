@@ -29,7 +29,7 @@ public class StringListConfig extends ConfigType<List<String>> {
 	}
 
 	@Override
-	public void deserialize(String value) {
-		setValue(Arrays.stream(value.split(" ")).collect(Collectors.toList()));
+	public List<String> deserialize(String value) {
+		return Arrays.stream(value.split(" ")).collect(Collectors.toList());
 	}
 }

@@ -3,6 +3,7 @@ package dev.schmarrn.lighty;
 import dev.schmarrn.lighty.api.LightyMode;
 import dev.schmarrn.lighty.config.Config;
 import dev.schmarrn.lighty.event.Compute;
+import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -27,6 +28,7 @@ public class ModeLoader {
 
 		ModeLoader.mode = modeToLoad;
 		Config.LAST_USED_RENDERER.setValue(id);
+		ModeLoader.mode.initializeDrawLists();
 		Compute.markDirty();
 
 		SMACH.enable();
@@ -43,8 +45,8 @@ public class ModeLoader {
 	}
 
 	@Nullable
-	public static LightyMode<?, ?> getCurrentMode() {
-		if (!SMACH.isEnabled()) return null;
+	public static LightyMode<?, ?> getCurrentMode(boolean ignoreEnabledState) {
+		if (!ignoreEnabledState && !SMACH.isEnabled()) return null;
 		return mode;
 	}
 

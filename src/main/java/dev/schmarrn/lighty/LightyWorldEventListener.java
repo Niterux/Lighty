@@ -25,7 +25,7 @@ public class LightyWorldEventListener implements WorldEventListener {
 			Compute.markDirty();
 	}
 
-	// We do not need anything below this, but LevelListener REALLY wants us to take the rest home…
+	// We do not need anything below this, but WorldEventListener REALLY wants us to take the rest home…
 	@Override
 	public void onRegionChanged(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
 

@@ -8,7 +8,7 @@ public class Render {
 	public static void renderOverlay(float partialTicks) {
 		if (!SMACH.isEnabled()) return;
 
-		LightyMode<?, ?> mode = ModeLoader.getCurrentMode();
+		LightyMode<?, ?> mode = ModeLoader.getCurrentMode(false);
 		assert mode != null;
 
 		mode.render(partialTicks);

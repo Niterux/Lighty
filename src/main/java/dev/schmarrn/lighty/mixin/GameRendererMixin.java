@@ -17,7 +17,7 @@ public abstract class GameRendererMixin {
 
 	@Inject(method = "renderWorld", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/Lighting;turnOn()V"))
 	private void lighty$overlayRenderer(float partialTicks, long updateRenderersUntil, CallbackInfo ci) {
-		if (minecraft.world != null && minecraft.player != null && ModeLoader.getCurrentMode() != null)
+		if (minecraft.world != null && minecraft.player != null && ModeLoader.getCurrentMode(false) != null)
 			Render.renderOverlay(partialTicks);
 	}
 }

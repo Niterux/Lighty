@@ -38,23 +38,23 @@ public class Compute {
 
 		if (!SMACH.isEnabled()) return;
 
-		LightyMode<?, ?> mode = ModeLoader.getCurrentMode();
+		LightyMode<?, ?> mode = ModeLoader.getCurrentMode(false);
 		if (mode == null) return;
 
-		if (dirty) {
-			dirty = false;
-			mode.beforeCompute();
+		if (!dirty)
+			return;
+		dirty = false;
+		mode.beforeCompute();
 
-			int computeDistance = Config.OVERLAY_DISTANCE.getValue() * 16;
+		int computeDistance = Config.OVERLAY_DISTANCE.getValue() * 16;
 
-			for (int x = -computeDistance; x <= computeDistance; ++x)
-				for (int y = -computeDistance; y <= computeDistance; ++y)
-					for (int z = -computeDistance; z <= computeDistance; ++z)
-						mode.compute(world, (int)player.x + x, (int)player.y + y, (int)player.z + z);
+		for (int x = -computeDistance; x <= computeDistance; ++x)
+			for (int y = -computeDistance; y <= computeDistance; ++y)
+				for (int z = -computeDistance; z <= computeDistance; ++z)
+					mode.compute(world, (int) player.x + x, (int) player.y + y, (int) player.z + z);
 
-			mode.afterCompute();
-			mode.swap();
-		}
+		mode.afterCompute();
+		mode.swap();
 	}
 
 	public static void init() {

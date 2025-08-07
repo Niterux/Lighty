@@ -4,43 +4,33 @@ import dev.schmarrn.lighty.ui.widget.OptionWidget;
 import dev.schmarrn.lighty.ui.widget.TextBoxWidget;
 import org.lwjgl.util.Color;
 
-public class ColorConfig extends GetSetStringConfig<Color> {
+public class ColorConfig extends ConfigType<Color> {
 	ColorConfig(String key, Color defaultValue) {
 		super(key, defaultValue);
 	}
 
 	@Override
-	public String getString() {
-		Color color = getValue();
-		return String.format("0x%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue());
-	}
-
-	@Override
-	public boolean setString(String newString) {
-		int colors;
-		try {
-			newString = newString.replaceFirst("^0[xX]", "");
-			colors = Integer.parseInt(newString.toUpperCase(), 16);
-		} catch (Exception e) {
-			return false;
-		}
-		setValue(new Color(colors >> 16, colors >> 8 & 0xFF, colors & 0xFF));
-		return true;
-	}
-
-	@Override
 	public OptionWidget<Color> getOptionInstance() {
-		return new TextBoxWidget<Color>(this);
+		return new TextBoxWidget<>(this);
 	}
 
 
 	@Override
 	public String serialize() {
-		return getString();
+		Color color = getValue();
+		return String.format("0x%02X%02X%02X", color.getRed(), color.getGreen(), color.getBlue());
 	}
 
 	@Override
-	public void deserialize(String color) {
-		setString(color);
+	public Color deserialize(String color) throws DeserializationException {
+		try {
+			if (!color.startsWith("0x") || color.length() != 8)
+				throw new DeserializationException("Invalid format for a color!");
+			color = color.replaceFirst("^0x", "");
+			int colors = Integer.parseInt(color.toUpperCase(), 16);
+			return new Color(colors >> 16, colors >> 8 & 0xFF, colors & 0xFF);
+		} catch (NumberFormatException e) {
+			throw new DeserializationException("Invalid format for a color!");
+		}
 	}
 }

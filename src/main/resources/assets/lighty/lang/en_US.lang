@@ -38,3 +38,4 @@ lighty.options.overlay_transparency=Overlay Transparency
 lighty.options.flat_carpet=Render Flat
 lighty.options.overlay_line_thickness=Line Thickness
 lighty.options.overlay_green=Color of Safe Areas
+lighty.options.overlay_orange=Color of Areas Safe in Daylight

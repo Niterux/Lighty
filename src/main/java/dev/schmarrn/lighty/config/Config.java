@@ -16,19 +16,19 @@ package dev.schmarrn.lighty.config;
 
 import dev.schmarrn.lighty.Lighty;
 import net.fabricmc.loader.api.FabricLoader;
+import org.lwjgl.util.Color;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.lwjgl.util.Color;
 
 public class Config {
-	private static final HashMap<String, ConfigSerDe> configValues = new HashMap<>();
-	private static final HashMap<String, String> fileState = new HashMap<>();
 	public static final ArrayList<ConfigType<?>> GLOBAL_OPTIONS = new ArrayList<>();
 	public static final ArrayList<ConfigType<?>> MODE_SPECIFIC_OPTIONS = new ArrayList<>();
+	private static final HashMap<String, ConfigType<?>> configValues = new HashMap<>();
+	private static final HashMap<String, String> fileState = new HashMap<>();
 	// all the different config values
 	public static final StringConfig LAST_USED_RENDERER = new StringConfig("lighty.last_used_renderer", "lighty:renderer_carpet");
 	public static final IntegerConfig SKY_THRESHOLD = new IntegerConfig("lighty.sky_threshold", 7, 0, 15);
@@ -48,25 +48,30 @@ public class Config {
 	public static final BooleanConfig SHOULD_AUTO_ON = new BooleanConfig("lighty.auto_on", false);
 	public static final BooleanConfig SHOW_SKYLIGHT_LEVEL = new BooleanConfig("lighty.show_skylight_level", true);
 	public static final BooleanConfig SHOW_ABOVE_HITBOX = new BooleanConfig("lighty.show_above_hitbox", true);
-	public static final StringConfig CARPET_TEXTURE = new StringConfig("lighty.mode.carpet.texture", "/assets/lighty/textures/block/transparent.png");
+	public static final StringConfig CARPET_TEXTURE = new StringConfig("lighty.mode.carpet.texture", "/assets/lighty/textures/block/lightycarpet.png");
 	// Internal variables tracking config state
 	private static final Path PATH = FabricLoader.getInstance().getConfigDir().resolve(Lighty.MOD_ID).resolve("base.config");
 	private static boolean initStage = true;
 
 	static {
-		Collections.addAll(GLOBAL_OPTIONS,OVERLAY_GREEN, SHOW_SAFE, SHOULD_AUTO_ON, OVERLAY_DISTANCE, OVERLAY_BRIGHTNESS, OVERLAY_TRANSPARENCY, SKY_THRESHOLD, BLOCK_THRESHOLD);
+		Collections.addAll(GLOBAL_OPTIONS, OVERLAY_GREEN, OVERLAY_ORANGE, SHOW_SAFE, SHOULD_AUTO_ON, OVERLAY_DISTANCE, OVERLAY_BRIGHTNESS, OVERLAY_TRANSPARENCY, SKY_THRESHOLD, BLOCK_THRESHOLD);
 	}
 
-	private static void loadFromFile(String key, ConfigSerDe type) {
+	private static <T> void loadFromFile(String key, ConfigType<T> type) {
 		// If the file contains the config value, get the configured value...
 		String value = fileState.getOrDefault(key, null);
 		if (value != null) {
 			// ... and update the internal value to reflect the file content
-			type.deserialize(value);
+			try {
+				type.setValue(type.deserialize(value));
+			} catch (DeserializationException e) {
+				fileState.remove(key);
+				type.resetToDefault();
+			}
 		}
 	}
 
-	public static void register(String key, ConfigSerDe type) {
+	public static void register(String key, ConfigType<?> type) {
 		configValues.put(key, type);
 		loadFromFile(key, type);
 	}
@@ -95,7 +100,7 @@ public class Config {
 			throw new RuntimeException(e);
 		}
 
-		for (Map.Entry<String, ConfigSerDe> entry : configValues.entrySet()) {
+		for (Map.Entry<String, ConfigType<?>> entry : configValues.entrySet()) {
 			loadFromFile(entry.getKey(), entry.getValue());
 		}
 	}
@@ -107,7 +112,7 @@ public class Config {
 		}
 		StringBuilder content = new StringBuilder();
 
-		for (Map.Entry<String, ConfigSerDe> pair : configValues.entrySet()) {
+		for (Map.Entry<String, ConfigType<?>> pair : configValues.entrySet()) {
 			content.append(pair.getKey()).append("=").append(pair.getValue().serialize()).append("\n");
 		}
 

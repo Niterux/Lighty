@@ -22,7 +22,7 @@ public class StringConfig extends ConfigType<String> {
 	}
 
 	@Override
-	public void deserialize(String value) {
-		setValue(value);
+	public String deserialize(String value) {
+		return value;
 	}
 }

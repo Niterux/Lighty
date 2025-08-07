@@ -6,6 +6,7 @@ import dev.schmarrn.lighty.ui.widget.ListedWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ public abstract class OptionsScreen extends Screen {
 	public void render(int mouseX, int mouseY, float tickDelta) {
 		super.renderBackground();
 		super.render(mouseX, mouseY, tickDelta);
+		GL11.glColor3f(1.0f, 1.0f, 1.0f);
 		for (ListedWidget listedWidget : widgetList) {
 			listedWidget.setHovered(mouseX, mouseY);
 			listedWidget.render(minecraft);

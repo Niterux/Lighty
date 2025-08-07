@@ -44,7 +44,7 @@ public class IntegerConfig extends ConfigType<Integer> {
 	}
 
 	@Override
-	public void deserialize(String value) {
-		setValue(Integer.valueOf(value));
+	public Integer deserialize(String value) {
+		return Integer.valueOf(value);
 	}
 }

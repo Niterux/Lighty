@@ -1,6 +1,5 @@
 package dev.schmarrn.lighty.config;
 
-import dev.schmarrn.lighty.ui.screen.OptionsScreen;
 import dev.schmarrn.lighty.ui.widget.BooleanWidget;
 import dev.schmarrn.lighty.ui.widget.OptionWidget;
 
@@ -20,7 +19,7 @@ public class BooleanConfig extends ConfigType<Boolean> {
 	}
 
 	@Override
-	public void deserialize(String value) {
-		setValue(Boolean.valueOf(value));
+	public Boolean deserialize(String value) {
+		return Boolean.valueOf(value);
 	}
 }
