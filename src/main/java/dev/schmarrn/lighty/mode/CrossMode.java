@@ -16,8 +16,6 @@ import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Color;
 
-import java.util.concurrent.atomic.AtomicReference;
-
 public class CrossMode extends LightyMode<Provider.Pos, IntIntMutablePair> {
 	private static int LIST_START = -1;
 
@@ -103,19 +101,13 @@ public class CrossMode extends LightyMode<Provider.Pos, IntIntMutablePair> {
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 
 		GL11.glLineWidth(Config.OVERLAY_LINE_THICKNESS.getValue());
-		AtomicReference<Double> lastX = new AtomicReference<>((double) 0);
-		AtomicReference<Double> lastY = new AtomicReference<>((double) 0);
-		AtomicReference<Double> lastZ = new AtomicReference<>((double) 0);
 		cache.forEach((pos, data) -> {
 			Vec3d cameraPosition = camera.lerpPosition(tickDelta);
 			double x = pos.x - cameraPosition.x;
 			double y = pos.y + 0.01 - cameraPosition.y;
 			double z = pos.z - cameraPosition.z;
-
-			GL11.glTranslated(x - lastX.get(), y - lastY.get(), z - lastZ.get());
-			lastX.set(x);
-			lastY.set(y);
-			lastZ.set(z);
+			GL11.glPushMatrix();
+			GL11.glTranslated(x, y, z);
 			switch (Provider.getColor(data)) {
 				case SAFE:
 					GL11.glCallList(GREEN_LIST);
@@ -126,9 +118,8 @@ public class CrossMode extends LightyMode<Provider.Pos, IntIntMutablePair> {
 				case UNSAFE:
 					GL11.glCallList(RED_LIST);
 			}
-
+			GL11.glPopMatrix();
 		});
-		GL11.glTranslated(-lastX.get(), -lastY.get(), -lastZ.get());
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		if (Config.OVERLAY_TRANSPARENCY.getValue() < 100)
 			GL11.glDisable(GL11.GL_BLEND);

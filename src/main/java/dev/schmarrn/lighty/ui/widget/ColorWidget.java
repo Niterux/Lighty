@@ -7,8 +7,10 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Color;
 
 public class ColorWidget extends OptionWidget<Color> {
+	TextBoxWidget<Color> textBoxWidget;
 	public ColorWidget(ConfigType<Color> option) {
 		super(option);
+		textBoxWidget = new TextBoxWidget<>(option);
 	}
 
 	@Override

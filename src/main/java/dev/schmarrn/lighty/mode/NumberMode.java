@@ -1,5 +1,6 @@
 package dev.schmarrn.lighty.mode;
 
+import com.mojang.blaze3d.platform.MemoryTracker;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import dev.schmarrn.lighty.Lighty;
 import dev.schmarrn.lighty.api.LightyMode;
@@ -16,9 +17,10 @@ import net.minecraft.world.World;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Color;
 
-public class NumberMode extends LightyMode<Provider.Pos, NumberMode.Data> {
+public class NumberMode extends LightyMode<Provider.Pos, IntIntMutablePair> {
 
 	private static final float TEXTURE_SIZE = 32;
+	private static int LIST_START = -1;
 
 	public static void init() {
 		ModeManager.registerMode(Lighty.MOD_ID + ".number_mode", new NumberMode());
@@ -78,12 +80,33 @@ public class NumberMode extends LightyMode<Provider.Pos, NumberMode.Data> {
 		if (color == null) return;
 
 		double offset = 0;
+		if (Config.SHOW_ABOVE_HITBOX.getValue()) {
+			int blockId = world.getBlock(x, y + 1, z);
+			if (blockId != 0)
+				offset += Block.BY_ID[blockId].maxY;
+		}
 
-		int blockId = world.getBlock(x, y + 1, z);
-		if (blockId != 0)
-			offset += Block.BY_ID[blockId].maxY;
+		cache.put(new Provider.Pos(x, y + 1 + offset, z), light);
+	}
 
-		cache.put(new Provider.Pos(x, y + 1, z), new Data(light.leftInt(), light.rightInt(), offset, color));
+	@Override
+	public void initializeDrawLists() {
+		Lighty.LOGGER.info("INITIALIZING DRAW LISTS!!!!!!!!!!!!");
+		if (LIST_START == -1) {
+			LIST_START = MemoryTracker.getLists(256);
+		}
+		World world = MinecraftInstanceAccessor.getMinecraft().world;
+		if (world == null)
+		{
+			Lighty.LOGGER.info("WORLD IS NULL!!!");
+			return;
+		}
+		float brightness = world.dimension.brightnessTable[Config.OVERLAY_BRIGHTNESS.getValue()];
+		float offset = Config.SHOW_SKYLIGHT_LEVEL.getValue() ? 4.5f : 0f;
+		for (int skyLight = 0; skyLight < 16; skyLight++) {
+			for (int blockLight = 0; blockLight < 16; blockLight++)
+				putDisplayList(skyLight, blockLight, offset, brightness);
+		}
 	}
 
 	@Override
@@ -97,7 +120,6 @@ public class NumberMode extends LightyMode<Provider.Pos, NumberMode.Data> {
 			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		}
 
-		float brightness = minecraft.world.dimension.brightnessTable[Config.OVERLAY_BRIGHTNESS.getValue()];
 		TextureManager textureManager = MinecraftInstanceAccessor.getMinecraft().textureManager;
 		textureManager.bind(textureManager.load("/assets/lighty/textures/block/numbers.png"));
 		cache.forEach((pos, data) -> {
@@ -106,20 +128,13 @@ public class NumberMode extends LightyMode<Provider.Pos, NumberMode.Data> {
 			double y = pos.y + 0.001 - cameraPosition.y;
 			double z = pos.z + 0.5 - cameraPosition.z;
 
-			if (Config.SHOW_ABOVE_HITBOX.getValue())
-				y += data.offset;
 
 			GL11.glPushMatrix();
 			GL11.glTranslated(x, y, z);
 			GL11.glScalef(1f / 32f, -1f / 32f, 1f / 32f);
 			GL11.glRotated(90, 1, 0, 0);
-			//GL11.glRotated(camera.cameraPitch - 180, 0, 0, 1);
 
-			float offset = Config.SHOW_SKYLIGHT_LEVEL.getValue() ? 4.5f : 0f;
-
-			renderNumber(data.blockLightLevel, data.color.getColor(), -offset, brightness);
-			if (Config.SHOW_SKYLIGHT_LEVEL.getValue())
-				renderNumber(data.skyLightLevel, data.color.getColor(), offset, brightness);
+			GL11.glCallList(data.leftInt() + LIST_START + (data.rightInt() * 16 * LIST_START));
 
 			GL11.glPopMatrix();
 		});
@@ -128,17 +143,19 @@ public class NumberMode extends LightyMode<Provider.Pos, NumberMode.Data> {
 			GL11.glDisable(GL11.GL_BLEND);
 	}
 
-	static class Data {
-		public int blockLightLevel;
-		public int skyLightLevel;
-		public double offset;
-		public ColorEnum color;
-
-		public Data(int blockLightLevel, int skyLightLevel, double offset, ColorEnum color) {
-			this.blockLightLevel = blockLightLevel;
-			this.skyLightLevel = skyLightLevel;
-			this.offset = offset;
-			this.color = color;
+	public void putDisplayList(int skyLight, int blockLight, float offset, float brightness) {
+		int index = LIST_START + blockLight + (LIST_START * skyLight * 16);
+		GL11.glNewList(index, GL11.GL_COMPILE);
+		ColorEnum color = Provider.getColor(blockLight, skyLight);
+		if (color == null) {
+			GL11.glEndList();
+			return;
 		}
+
+		renderNumber(blockLight, color.getColor(), -offset, brightness);
+		if (Config.SHOW_SKYLIGHT_LEVEL.getValue())
+			renderNumber(skyLight, color.getColor(), offset, brightness);
+
+		GL11.glEndList();
 	}
 }
