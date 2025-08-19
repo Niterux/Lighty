@@ -7,7 +7,8 @@
   "client": [
     "BlockPlacedMixin",
     "LightUpdateMixin",
-    "RenderPipelinesMixin"
+    "RenderPipelinesMixin",
+    "accessors.MinecraftInstanceAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -8,6 +8,8 @@ pluginManagement {
     }
 }
 
-include("client")
+if (fabric_enabled.toBoolean()) {
+    include("client")
+}
 
 rootProject.name = "lighty"

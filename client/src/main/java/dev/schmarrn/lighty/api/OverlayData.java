@@ -1,7 +1,7 @@
 package dev.schmarrn.lighty.api;
 
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 
 /**
  * Data that gets shared between the DataProvider and the Renderer.
@@ -15,6 +15,7 @@ import net.minecraft.core.Vec3i;
  */
 public record OverlayData(boolean valid, int color, int skyNumber, int blockNumber, BlockPos pos, Vec3i rPos, float yOffset) {
     public static OverlayData invalid() {
-        return new OverlayData(false, 0, 0, 0, BlockPos.ZERO, BlockPos.ZERO, 0.0f);
+
+        return new OverlayData(false, 0, 0, 0, new BlockPos(0, 0, 0), new Vec3i(0, 0, 0), 0.0f);
     }
 }

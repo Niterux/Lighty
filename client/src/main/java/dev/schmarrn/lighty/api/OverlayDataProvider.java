@@ -1,12 +1,11 @@
 package dev.schmarrn.lighty.api;
 
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.World;
 
 public interface OverlayDataProvider {
-    OverlayData compute(ClientLevel level, BlockPos pos, Vec3i rPos);
+    OverlayData compute(World level, BlockPos pos, Vec3i rPos);
 
-    ResourceLocation getResourceLocation();
+    ModPath getResourceLocation();
 }

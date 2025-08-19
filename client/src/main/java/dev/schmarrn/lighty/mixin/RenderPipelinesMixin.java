@@ -86,8 +86,5 @@ public class RenderPipelinesMixin {
         LightyPipelines.LINES = RenderPipeline.builder(LightyPipelines.LINES_SNIPPET)
                 .withLocation(Lighty.MOD_ID + "pipeline/lines")
                 .build();
-
-        // If Iris is loaded, register the pipelines with iris as well
-        UtilDefinition.INSTANCE.registerPipelinesWithIris();
     }
 }

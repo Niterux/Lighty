@@ -11,7 +11,7 @@ import java.util.function.Supplier;
 public class ModeButtonRegister {
     static final List<ButtonHolder> BUTTONS = Lists.newArrayList();
 
-    public static void addButton(Component message, Component tooltip, Button.OnPress onPress) {
+    public static void addButton(String message, String tooltip, Button.OnPress onPress) {
         BUTTONS.add(new ButtonHolder(Button.builder(message, onPress).tooltip(Tooltip.create(tooltip))));
     }
 

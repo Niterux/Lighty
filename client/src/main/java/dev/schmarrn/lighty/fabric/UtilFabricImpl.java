@@ -15,27 +15,13 @@
 package dev.schmarrn.lighty.fabric;
 
 import dev.schmarrn.lighty.UtilDefinition;
-import dev.schmarrn.lighty.core.LightyPipelines;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.loader.api.FabricLoader;
-import net.irisshaders.iris.api.v0.IrisApi;
-import net.irisshaders.iris.api.v0.IrisProgram;
 import net.minecraft.client.KeyMapping;
 
 import java.nio.file.Path;
 
 public class UtilFabricImpl implements UtilDefinition {
-    private static final IrisApi IRIS;
-    static {
-        IrisApi i;
-        try {
-            i = (IrisApi)Class.forName("net.irisshaders.iris.apiimpl.IrisApiV0Impl").getField("INSTANCE").get(null);
-        } catch (NoSuchFieldException | ClassNotFoundException | IllegalAccessException var1) {
-            i = null;
-        }
-        IRIS = i;
-    }
-
     @Override
     public KeyMapping registerKeyBinding(KeyMapping mapping) {
         return KeyBindingHelper.registerKeyBinding(mapping);
@@ -44,19 +30,5 @@ public class UtilFabricImpl implements UtilDefinition {
     @Override
     public Path getConfigDir() {
         return FabricLoader.getInstance().getConfigDir();
-    }
-
-    @Override
-    public boolean shadersEnabled() {
-        return IRIS != null && IRIS.isShaderPackInUse();
-    }
-
-    @Override
-    public void registerPipelinesWithIris() {
-        if (IRIS != null) {
-            IRIS.assignPipeline(LightyPipelines.TERRAIN_TRANSLUCENT, IrisProgram.TRANSLUCENT);
-            IRIS.assignPipeline(LightyPipelines.TERRAIN_CUTOUT, IrisProgram.TERRAIN_CUTOUT);
-            IRIS.assignPipeline(LightyPipelines.LINES, IrisProgram.LINES);
-        }
     }
 }

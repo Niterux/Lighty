@@ -23,6 +23,7 @@ import dev.schmarrn.lighty.event.KeyBind;
 import dev.schmarrn.lighty.renderers.CarpetRenderer;
 import dev.schmarrn.lighty.renderers.CrossRenderer;
 import dev.schmarrn.lighty.renderers.NumberRenderer;
+import net.minecraft.locale.LanguageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,7 @@ public class Lighty {
     public static final String MOD_NAME = "Lighty";
 
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_NAME);
+    public static final LanguageManager LANGUAGE_MANAGER = LanguageManager.getInstance();
 
     public static void init() {
         LOGGER.info("Let there be {}", MOD_NAME);

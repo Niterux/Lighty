@@ -16,8 +16,9 @@ package dev.schmarrn.lighty.config;
 
 import dev.schmarrn.lighty.Lighty;
 import dev.schmarrn.lighty.UtilDefinition;
+import dev.schmarrn.lighty.api.ModPath;
 import dev.schmarrn.lighty.config.compat.Lighty2Config;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.block.Block;
 
 import java.io.*;
 import java.util.Arrays;
@@ -27,8 +28,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Config {
-    private static List<ResourceLocation> stringToRL(String... stuff) {
-        return Arrays.stream(stuff).map(ResourceLocation::parse).toList();
+    private static List<ModPath> stringToRL(String... stuff) {
+        return Arrays.stream(stuff).map(ModPath::parse).toList();
     }
     // Internal variables tracking config state
     private static final String PATH = UtilDefinition.INSTANCE.getConfigDir().toString() + "/lighty/base.config";
@@ -37,8 +38,8 @@ public class Config {
     private static boolean initStage = true;
 
     // all the different config values
-    public static final ResourceLocationConfig LAST_USED_RENDERER = new ResourceLocationConfig("lighty.last_used_renderer", ResourceLocation.parse("lighty:renderer_carpet"));
-    public static final ResourceLocationListConfig ACTIVE_DATA_PROVIDERS = new ResourceLocationListConfig("lighty.active_data_providers", stringToRL(
+    public static final ModPathConfig LAST_USED_RENDERER = new ModPathConfig("lighty.last_used_renderer", ModPath.parse("lighty:renderer_carpet"));
+    public static final ModPathListConfig ACTIVE_DATA_PROVIDERS = new ModPathListConfig("lighty.active_data_providers", stringToRL(
             "lighty:data_provider_base",
             "lighty:data_provider_farmland"
     ));
@@ -62,18 +63,13 @@ public class Config {
     public static final ColorConfig ADDITIONAL_OVERLAY_WARN = new ColorConfig("lighty.additional_overlay_warn", 0xFF6600);
     public static final ColorConfig ADDITIONAL_OVERLAY_BAD = new ColorConfig("lighty.additional_overlay_bad", 0xFF0000);
 
-    public static final ResourceLocationListConfig AUTO_ON_ITEM_LIST = new ResourceLocationListConfig("lighty.auto_on.item", stringToRL(
-            "minecraft:torch",
-            "minecraft:soul_torch",
-            "minecraft:lantern",
-            "minecraft:soul_lantern"
-    ));
+    public static final IntegerListConfig AUTO_ON_ITEM_LIST = new IntegerListConfig("lighty.auto_on.item", List.of(Block.TORCH.id));
     public static final BooleanConfig SHOULD_AUTO_ON = new BooleanConfig("lighty.auto_on", false);
 
     public static final BooleanConfig SHOW_SKYLIGHT_LEVEL = new BooleanConfig("lighty.show_skylight_level", true);
 
-    public static final ResourceLocationConfig CARPET_TEXTURE = new ResourceLocationConfig("lighty.mode.carpet.texture", ResourceLocation.fromNamespaceAndPath(Lighty.MOD_ID, "textures/block/transparent.png"));
-    public static final ResourceLocationConfig CROSS_TEXTURE = new ResourceLocationConfig("lighty.mode.cross.texture", ResourceLocation.fromNamespaceAndPath(Lighty.MOD_ID, "textures/block/cross.png"));
+    public static final ModPathConfig CARPET_TEXTURE = new ModPathConfig("lighty.mode.carpet.texture", new ModPath(Lighty.MOD_ID, "textures/block/transparent.png"));
+    public static final ModPathConfig CROSS_TEXTURE = new ModPathConfig("lighty.mode.cross.texture", new ModPath(Lighty.MOD_ID, "textures/block/cross.png"));
 
     private static void loadFromFile(String key, ConfigSerDe type) {
         // If the file contains the config value, get the configured value...

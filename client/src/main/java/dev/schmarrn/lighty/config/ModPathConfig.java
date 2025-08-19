@@ -1,15 +1,16 @@
 package dev.schmarrn.lighty.config;
 
+import dev.schmarrn.lighty.api.ModPath;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.resources.ResourceLocation;
 
-public class ResourceLocationConfig extends ConfigType<ResourceLocation> {
+public class ModPathConfig extends ConfigType<ModPath> {
     @Override
-    public OptionInstance<ResourceLocation> getOptionInstance() {
+    public OptionInstance<ModPath> getOptionInstance() {
         return null;
     }
 
-    public ResourceLocationConfig(String key, ResourceLocation defaultValue) {
+    public ModPathConfig(String key, ModPath defaultValue) {
         super(key, defaultValue);
     }
 
@@ -20,6 +21,6 @@ public class ResourceLocationConfig extends ConfigType<ResourceLocation> {
 
     @Override
     void deserialize(String value) {
-        setValue(ResourceLocation.parse(value));
+        setValue(ModPath.parse(value));
     }
 }

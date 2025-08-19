@@ -1,19 +1,18 @@
 package dev.schmarrn.lighty.api;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public interface OverlayRenderer {
-    void build(ClientLevel level, BlockPos pos, OverlayData data, VertexConsumer builder, int lightmap);
+    void build(World level, BlockPos pos, OverlayData data, BufferBuilder builder, int lightmap);
 
     RenderPipeline getPipeline();
-    VertexFormat getVertexFormat();
-    VertexFormat.Mode getVertexFormatMode();
-    ResourceLocation getTextureLocation();
 
-    ResourceLocation getResourceLocation();
+    int getDrawMode();
+
+    ModPath getTextureLocation();
+
+    ModPath getResourceLocation();
 }

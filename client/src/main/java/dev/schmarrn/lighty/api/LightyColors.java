@@ -47,6 +47,4 @@ public class LightyColors {
         // Crops can be planted but won't grow without additional light
         return Config.ADDITIONAL_OVERLAY_WARN.getValue() | 0xFF000000;
     }
-
-    private LightyColors() {}
 }

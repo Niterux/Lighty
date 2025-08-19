@@ -14,26 +14,30 @@
 
 package dev.schmarrn.lighty.api;
 
+import dev.schmarrn.lighty.Lighty;
 import dev.schmarrn.lighty.core.DataProviderRegistry;
 import dev.schmarrn.lighty.core.RendererRegistry;
 import dev.schmarrn.lighty.ui.ModeButtonRegister;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+
+import java.text.MessageFormat;
 
 /**
  * Used for registering your LightyModes.
  */
 public class ModeManager {
+    private ModeManager() {
+    }
+
     /**
      * Registers a Lighty OverlayDataProvider.
+     * <p>
+     * Use the LightyModesRegistration EntryPoint
      *
-     * If on Fabric: use the LightyModesRegistration EntryPoint
-     * If on Forge: call during FMLClientSetupEvent and enqueue work
-     * @param rl Used to generate the translatable text resource locations
+     * @param modPath      Used to generate the translatable text resource locations
      * @param dataProvider Your OverlayDataProvider to be registered
      */
-    public static void registerDataProvider(ResourceLocation rl, OverlayDataProvider dataProvider) {
-        DataProviderRegistry.put(rl, dataProvider);
+    public static void registerDataProvider(ModPath modPath, OverlayDataProvider dataProvider) {
+        DataProviderRegistry.put(modPath, dataProvider);
     }
 
     /**
@@ -41,20 +45,18 @@ public class ModeManager {
      * For the Button, you need to specify `modeSwitcher.{id.getNamespace}.{id.getPath}` for the
      * Button Name, and `modeSwitcher.{id.getNamespace}.{id.getPath}.tooltip` for the Tooltip of
      * the Button.
+     * <p>
+     * Use the LightyModesRegistration EntryPoint
      *
-     * If on Fabric: use the LightyModesRegistration EntryPoint
-     * If on Forge: call during FMLClientSetupEvent and enqueue work
-     * @param rl Used to generate the translatable text resource locations
+     * @param modPath  Used to generate the translatable text resource locations
      * @param renderer Your OverlayRenderer to be registered
      */
-    public static void registerRenderer(ResourceLocation rl, OverlayRenderer renderer) {
-        RendererRegistry.put(rl, renderer);
+    public static void registerRenderer(ModPath modPath, OverlayRenderer renderer) {
+        RendererRegistry.put(modPath, renderer);
 
         ModeButtonRegister.addButton(
-                Component.translatable("modeSwitcher." + rl.getNamespace() + "." + rl.getPath()),
-                Component.translatable("modeSwitcher." + rl.getNamespace() + "." + rl.getPath() + ".tooltip"), button -> RendererRegistry.loadRenderer(rl)
+                Lighty.LANGUAGE_MANAGER.translate(MessageFormat.format("modeSwitcher.{0}.{1}", modPath.getModId(), modPath.getPath())),
+                Lighty.LANGUAGE_MANAGER.translate(MessageFormat.format("modeSwitcher.{0}.{1}.tooltip", modPath.getModId(), modPath.getPath())), button -> RendererRegistry.loadRenderer(modPath)
         );
     }
-
-    private ModeManager() {}
 }
