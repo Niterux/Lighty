@@ -1,23 +1,26 @@
 package dev.schmarrn.lighty.ui;
 
+import dev.schmarrn.lighty.Lighty;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.GridLayout;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resource.language.I18n;
 import org.jetbrains.annotations.NotNull;
 
 public class ModeSelectionScreen extends Screen {
     private final Screen parent;
+    private final String title;
     protected ModeSelectionScreen(Screen parent) {
-        super(Component.translatable("lighty.overlay.title"));
+        this.title = "lighty.overlay.title";
         this.parent = parent;
     }
 
     @Override
-    protected void init() {
+    public void init() {
         GridLayout gridWidget = new GridLayout();
         gridWidget.defaultCellSetting().paddingBottom(4).alignHorizontallyCenter().alignVerticallyMiddle();
         GridLayout.RowHelper adder = gridWidget.createRowHelper(1);
@@ -33,15 +36,15 @@ public class ModeSelectionScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics guiGraphics, int i, int j, float f) {
-        super.render(guiGraphics, i, j, f);
-        guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 15, 0xFFFFFF);
+    public void render(int mouseX, int mouseY, float tickDelta) {
+        super.render(mouseX, mouseY, tickDelta);
+        this.drawCenteredString(this.textRenderer, I18n.translate(this.title), this.width / 2, 15, 0xFFFFFF);
     }
 
     @Override
-    public void onClose() {
+    public void removed() {
         assert this.minecraft != null;
-        this.minecraft.setScreen(parent);
+        this.minecraft.openScreen(parent);
     }
 
     @Override

@@ -18,6 +18,7 @@ import dev.schmarrn.lighty.Lighty;
 import dev.schmarrn.lighty.core.DataProviderRegistry;
 import dev.schmarrn.lighty.core.RendererRegistry;
 import dev.schmarrn.lighty.ui.ModeButtonRegister;
+import net.minecraft.resource.language.I18n;
 
 import java.text.MessageFormat;
 
@@ -55,8 +56,8 @@ public class ModeManager {
         RendererRegistry.put(modPath, renderer);
 
         ModeButtonRegister.addButton(
-                Lighty.LANGUAGE_MANAGER.translate(MessageFormat.format("modeSwitcher.{0}.{1}", modPath.getModId(), modPath.getPath())),
-                Lighty.LANGUAGE_MANAGER.translate(MessageFormat.format("modeSwitcher.{0}.{1}.tooltip", modPath.getModId(), modPath.getPath())), button -> RendererRegistry.loadRenderer(modPath)
+                I18n.translate(MessageFormat.format("modeSwitcher.{0}.{1}", modPath.getModId(), modPath.getPath())),
+                I18n.translate(MessageFormat.format("modeSwitcher.{0}.{1}.tooltip", modPath.getModId(), modPath.getPath())), button -> RendererRegistry.loadRenderer(modPath)
         );
     }
 }
