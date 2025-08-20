@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Config {
-    private static List<ModPath> stringToRL(String... stuff) {
+    private static List<ModPath> stringToModPath(String... stuff) {
         return Arrays.stream(stuff).map(ModPath::parse).toList();
     }
     // Internal variables tracking config state
@@ -39,7 +39,7 @@ public class Config {
 
     // all the different config values
     public static final ModPathConfig LAST_USED_RENDERER = new ModPathConfig("lighty.last_used_renderer", ModPath.parse("lighty:renderer_carpet"));
-    public static final ModPathListConfig ACTIVE_DATA_PROVIDERS = new ModPathListConfig("lighty.active_data_providers", stringToRL(
+    public static final ModPathListConfig ACTIVE_DATA_PROVIDERS = new ModPathListConfig("lighty.active_data_providers", stringToModPath(
             "lighty:data_provider_base",
             "lighty:data_provider_farmland"
     ));

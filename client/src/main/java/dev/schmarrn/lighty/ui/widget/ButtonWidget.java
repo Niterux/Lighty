@@ -21,8 +21,8 @@ public class ButtonWidget extends InteractableWidget {
         int halfWidth = size.pixelWidth / 2;
         int renderedTextY = getWidgetHeight() / 2 + y - 4;
         int buttonVCoordinate = mouseOver ? 86 : 66;
-        drawTexture(x, y, 0, buttonVCoordinate, buttonVCoordinate, getWidgetHeight());
-        drawTexture(x + halfWidth, y, 200 - halfWidth, buttonVCoordinate, halfWidth, getWidgetHeight());
+        drawTexture(x, y, 0, buttonVCoordinate, halfWidth, 20);
+        drawTexture(x + halfWidth, y, 200 - halfWidth, buttonVCoordinate, halfWidth, 20);
         drawCenteredString(minecraft.textRenderer, I18n.translate(message), x + halfWidth, renderedTextY, 0xFFFFFFFF);
     }
 

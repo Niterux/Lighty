@@ -4,8 +4,8 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 public class ModPath {
-    private String modId;
-    private String path;
+    private final String modId;
+    private final String path;
 
     public ModPath(String modId, String path) {
         this.path = path;

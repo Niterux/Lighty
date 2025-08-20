@@ -1,7 +1,6 @@
 package dev.schmarrn.lighty.config;
 
-import net.minecraft.client.OptionInstance;
-import net.minecraft.resources.ResourceLocation;
+import dev.schmarrn.lighty.ui.widget.InteractableWidget;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +11,7 @@ public class IntegerListConfig extends ConfigType<List<Integer>> {
     }
 
     @Override
-    public OptionInstance<List<Integer>> getOptionInstance() {
+    public InteractableWidget createAssociatedWidget(InteractableWidget.WidgetSizes size) {
         return null;
     }
 

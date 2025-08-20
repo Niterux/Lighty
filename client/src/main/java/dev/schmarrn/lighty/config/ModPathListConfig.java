@@ -1,8 +1,7 @@
 package dev.schmarrn.lighty.config;
 
 import dev.schmarrn.lighty.api.ModPath;
-import net.minecraft.client.OptionInstance;
-import net.minecraft.resources.ResourceLocation;
+import dev.schmarrn.lighty.ui.widget.InteractableWidget;
 
 import java.util.Arrays;
 import java.util.List;
@@ -13,7 +12,7 @@ public class ModPathListConfig extends ConfigType<List<ModPath>> {
     }
 
     @Override
-    public OptionInstance<List<ModPath>> getOptionInstance() {
+    public InteractableWidget createAssociatedWidget(InteractableWidget.WidgetSizes size) {
         return null;
     }
 

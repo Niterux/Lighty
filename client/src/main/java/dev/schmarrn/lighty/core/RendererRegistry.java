@@ -4,7 +4,6 @@ import dev.schmarrn.lighty.Lighty;
 import dev.schmarrn.lighty.api.ModPath;
 import dev.schmarrn.lighty.api.OverlayRenderer;
 import dev.schmarrn.lighty.config.Config;
-import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
 

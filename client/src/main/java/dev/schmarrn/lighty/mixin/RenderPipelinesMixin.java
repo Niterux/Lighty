@@ -8,7 +8,6 @@ import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormatElement;
 import dev.schmarrn.lighty.Lighty;
-import dev.schmarrn.lighty.UtilDefinition;
 import dev.schmarrn.lighty.core.LightyPipelines;
 import net.minecraft.client.renderer.RenderPipelines;
 import org.spongepowered.asm.mixin.Final;

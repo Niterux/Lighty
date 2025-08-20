@@ -57,7 +57,7 @@ public class ModeManager {
 
         ModeButtonRegister.addButton(
                 I18n.translate(MessageFormat.format("modeSwitcher.{0}.{1}", modPath.getModId(), modPath.getPath())),
-                I18n.translate(MessageFormat.format("modeSwitcher.{0}.{1}.tooltip", modPath.getModId(), modPath.getPath())), button -> RendererRegistry.loadRenderer(modPath)
+                I18n.translate(MessageFormat.format("modeSwitcher.{0}.{1}.tooltip", modPath.getModId(), modPath.getPath())), () -> RendererRegistry.loadRenderer(modPath)
         );
     }
 }

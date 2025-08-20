@@ -2,6 +2,7 @@ package dev.schmarrn.lighty.config;
 
 import com.mojang.serialization.Codec;
 import dev.schmarrn.lighty.Lighty;
+import dev.schmarrn.lighty.ui.widget.InteractableWidget;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.Options;
 import net.minecraft.client.gui.components.Tooltip;
@@ -10,7 +11,7 @@ import net.minecraft.network.chat.Component;
 public class IntegerConfig extends ConfigType<Integer> {
     private final int min, max;
     @Override
-    public OptionInstance<Integer> getOptionInstance() {
+    public InteractableWidget createAssociatedWidget(InteractableWidget.WidgetSizes size) {
         return new OptionInstance<>(
                 this.getTranslationKey(),
                 object -> Tooltip.create(Component.translatable(this.getTranslationTooltipKey(), object)),

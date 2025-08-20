@@ -1,10 +1,10 @@
 package dev.schmarrn.lighty.config;
 
-import net.minecraft.client.OptionInstance;
+import dev.schmarrn.lighty.ui.widget.InteractableWidget;
 
 public class ColorConfig extends ConfigType<Integer> {
     @Override
-    public OptionInstance<Integer> getOptionInstance() {
+    public InteractableWidget createAssociatedWidget(InteractableWidget.WidgetSizes size) {
         return null;
     }
 
