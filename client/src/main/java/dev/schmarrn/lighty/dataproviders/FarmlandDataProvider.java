@@ -1,29 +1,23 @@
 package dev.schmarrn.lighty.dataproviders;
 
 import dev.schmarrn.lighty.Lighty;
-import dev.schmarrn.lighty.api.LightyColors;
-import dev.schmarrn.lighty.api.ModeManager;
-import dev.schmarrn.lighty.api.OverlayData;
-import dev.schmarrn.lighty.api.OverlayDataProvider;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.LightLayer;
-import net.minecraft.world.level.block.FarmBlock;
-import net.minecraft.world.level.block.state.BlockState;
+import dev.schmarrn.lighty.api.*;
+import net.minecraft.block.Block;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.LightType;
+import net.minecraft.world.World;
 
 public class FarmlandDataProvider implements OverlayDataProvider {
-    public OverlayData compute(ClientLevel level, BlockPos pos, Vec3i rPos) {
-        BlockPos posUp = pos.above();
-        BlockState blockState = level.getBlockState(pos);
+    public OverlayData compute(World world, BlockPos pos, Vec3i rPos) {
+        BlockPos posUp = new BlockPos(pos.x, pos.y + 1, pos.z);
 
-        if (!(blockState.getBlock() instanceof FarmBlock)) {
+        if (!(world.getBlock(pos.x, pos.y, pos.z) == Block.FARMLAND.id)) {
             return OverlayData.invalid();
         }
 
-        int blockLightLevel = level.getBrightness(LightLayer.BLOCK, posUp);
-        int skyLightLevel = level.getBrightness(LightLayer.SKY, posUp);
+        int blockLightLevel = world.getLight(LightType.BLOCK, posUp.x, posUp.y, posUp.z);
+        int skyLightLevel = world.getLight(LightType.SKY, posUp.x, posUp.y, posUp.z);
 
         int color = LightyColors.getGrowthARGB(blockLightLevel, skyLightLevel);
 
@@ -33,12 +27,12 @@ public class FarmlandDataProvider implements OverlayDataProvider {
     }
 
     @Override
-    public ResourceLocation getResourceLocation() {
-        return ResourceLocation.fromNamespaceAndPath(Lighty.MOD_ID, "data_provider_farmland");
+    public ModPath getModPath() {
+        return new ModPath(Lighty.MOD_ID, "data_provider_farmland");
     }
 
     public static void init() {
         var dp = new FarmlandDataProvider();
-        ModeManager.registerDataProvider(dp.getResourceLocation(), dp);
+        ModeManager.registerDataProvider(dp.getModPath(), dp);
     }
 }

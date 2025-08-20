@@ -7,5 +7,5 @@ import net.minecraft.world.World;
 public interface OverlayDataProvider {
     OverlayData compute(World level, BlockPos pos, Vec3i rPos);
 
-    ModPath getResourceLocation();
+    ModPath getModPath();
 }
