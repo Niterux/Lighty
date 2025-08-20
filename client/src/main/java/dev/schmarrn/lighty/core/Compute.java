@@ -21,10 +21,10 @@ import dev.schmarrn.lighty.api.OverlayDataProvider;
 import dev.schmarrn.lighty.api.OverlayRenderer;
 import dev.schmarrn.lighty.config.Config;
 import dev.schmarrn.lighty.mixin.accessors.MinecraftInstanceAccessor;
+import dev.schmarrn.lighty.mixin.accessors.WorldRendererCompiledChunksAccessor;
 import dev.schmarrn.lighty.overlaystate.SMACH;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.render.world.RenderChunk;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
@@ -85,7 +85,7 @@ public class Compute {
         if (subChunk.getBlockPos().y == pos.y) {
             // if we are on the y-border of a SubChunk, we need to update *both* SubChunks
             // see https://github.com/SchmarrnDevs/Lighty/issues/70
-            updateSection(subChunk.offset(0, -1, 0));
+            updateSection(new SubChunkPositionHelper(subChunk.x, subChunk.y - 1, subChunk.x));
         }
         updateSection(subChunk);
     }
@@ -143,10 +143,10 @@ public class Compute {
     private static void queueNewChunksSlow(Minecraft minecraft) {
         for (int xx = -Compute.computationDistance + 1; xx < Compute.computationDistance; ++xx) {
             for (int zz = -Compute.computationDistance + 1; zz < Compute.computationDistance; ++zz) {
-                ChunkPos chunkPos = new ChunkPos(playerPos.chunk().x + xx, playerPos.chunk().z + zz);
-                for (int ii = 0; ii < minecraft.level.getSectionsCount(); ++ii) {
-                    SectionPos chunkSection = SectionPos.of(chunkPos, ii + minecraft.level.getMinSectionY());
-                    if (!cachedBuffers.containsKey(chunkSection) && minecraft.levelRenderer.isSectionCompiled(chunkSection.origin())) {
+                ChunkPos chunkPos = new ChunkPos(playerPos.x + xx, playerPos.z + zz);
+                for (int ii = 0; ii < 8; ++ii) {
+                    SubChunkPositionHelper chunkSection = new SubChunkPositionHelper(chunkPos.x, ii, chunkPos.z);
+                    if (!cachedBuffers.containsKey(chunkSection) && isSubchunkRendering(minecraft, chunkSection)) {
                         toBeUpdated.add(chunkSection);
                     }
                 }
@@ -154,17 +154,17 @@ public class Compute {
         }
     }
 
-    private static void queueNewChunksIncompatibleWithSodium(Minecraft minecraft) {
+/*    private static void queueNewChunksIncompatibleWithSodium(Minecraft minecraft) {
         for (var section : minecraft.levelRenderer.getVisibleSections()) {
             SectionPos sectionPos = SectionPos.of(section.getRenderOrigin());
             if (!cachedBuffers.containsKey(sectionPos)) {
                 toBeUpdated.add(sectionPos);
             }
         }
-    }
+    }*/
 
     public static void computeCache(Minecraft minecraft) {
-        if (minecraft.player == null || minecraft.cameraEntity == null || minecraft.level == null) {
+        if (minecraft.player == null || minecraft.camera == null || minecraft.world == null) {
             return;
         }
 
@@ -172,7 +172,7 @@ public class Compute {
         SMACH.updateCompute(minecraft);
 
         // update player position
-        playerPos = SectionPos.of(minecraft.cameraEntity.blockPosition());
+        playerPos = SubChunkPositionHelper.fromBlockVec3(new Vec3i((int) minecraft.camera.x, (int) minecraft.camera.y, (int) minecraft.camera.z));
 
         if (!SMACH.isEnabled()) {
             return;
@@ -194,31 +194,31 @@ public class Compute {
         }
 
         // Compute at maximum as many chunks as specified
-        for (int ii = minecraft.level.getSectionsCount() * Config.CHUNKS_PER_TICK.getValue(); ii > 0;) {
+        for (int ii = 8 * Config.CHUNKS_PER_TICK.getValue(); ii > 0;) {
             // get the next section pos
-            SectionPos sectionPos = toBeUpdated.pollFirst();
-            if (sectionPos == null) {
+            SubChunkPositionHelper subChunkPos = toBeUpdated.pollFirst();
+            if (subChunkPos == null) {
                 // There is no more work to do, go home early! Feierabend :P
                 break;
             }
 
             // as long as the section is in range...
-            if (!outOfRange(sectionPos)) {
+            if (!outOfRange(subChunkPos)) {
                 // ... and the section is already compiled...
-                //if (!minecraft.levelRenderer.isSectionCompiled(sectionPos.origin())) {
+                //if (!minecraft.levelRenderer.isSectionCompiled(subChunkPos.origin())) {
                 //    // chunk data isn't ready yet, keep in queue
-                //    keepInUpdate.add(sectionPos);
+                //    keepInUpdate.add(subChunkPos);
                 //    continue;
                 //}
                 // ... we compute the new buffers, reduce the counter!
                 --ii;
                 cachedBuffers.compute(
-                        sectionPos,
+                        subChunkPos,
                         (pos, drawListHolder) -> buildChunk(
                                 renderer,
                                 dataProviders,
                                 pos,
-                                minecraft.level,
+                                minecraft.world,
                                 drawListHolder != null ? drawListHolder : new DrawListHolder()
                         )
                 );
@@ -230,6 +230,15 @@ public class Compute {
     private Compute() {}
 
     private static void setComputationDistance(){
-        computationDistance = Math.min(Config.OVERLAY_DISTANCE.getValue(), 256 >> MinecraftInstanceAccessor.getMinecraft().options.viewDistance);
+        computationDistance = Math.min(Config.OVERLAY_DISTANCE.getValue(), 16 >> MinecraftInstanceAccessor.getMinecraft().options.viewDistance);
+    }
+
+    private static boolean isSubchunkRendering(Minecraft minecraft, SubChunkPositionHelper pos) {
+        RenderChunk[] renderChunks = ((WorldRendererCompiledChunksAccessor)minecraft.worldRenderer).getCompiledChunks();
+        BlockPos originPosition = pos.getBlockPos();
+        for(RenderChunk renderChunk : renderChunks)
+            if(renderChunk.originX == originPosition.x && renderChunk.originY == originPosition.y && renderChunk.originZ == originPosition.z)
+                return true;
+        return false;
     }
 }
