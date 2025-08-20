@@ -109,9 +109,9 @@ public class Compute {
 
                     for (var dataProvider : dataProviders) {
                         var data = dataProvider.compute(world, pos, new Vec3i(x, y, z));
-                        overlayData.putIfAbsent(dataProvider.getResourceLocation().toString(), new ArrayList<>());
+                        overlayData.putIfAbsent(dataProvider.getModPath().toString(), new ArrayList<>());
                         if (data.valid()) {
-                            overlayData.get(dataProvider.getResourceLocation().toString()).add(data);
+                            overlayData.get(dataProvider.getModPath().toString()).add(data);
                         }
                     }
                 }
