@@ -38,7 +38,7 @@ public class LightyRenderer {
     // TODO? Maybe integrate Lighty render code more tightly into Minecraft render code, but wait if there are major changes in next versions until I do so
     private record Data(List<RenderPass.Draw<GpuBufferSlice[]>> drawList, int maxIndicesRequired, GpuBufferSlice[] dynamicTransforms) {}
 
-    private static int addData(SectionPos chunkSection, SectionBuffers gpuBuffer, Vec3 camPos, int biggestBufferSize, List<RenderPass.Draw<GpuBufferSlice[]>> drawList, List<DynamicUniforms.Transform> transforms) {
+    private static int addData(SubChunkPositionHelper chunkSection) {
         // Calculate the translation required to place the section at its right place
         Vec3 origin = new Vec3(chunkSection.origin());
         Vec3 dPos = origin.subtract(camPos);
@@ -83,9 +83,9 @@ public class LightyRenderer {
         int biggestBufferSize = 0;
         for (var entry : Compute.cachedBuffers.entrySet()) {
             SectionPos chunkSection = entry.getKey();
-            BufferHolder cachedBuffer = entry.getValue();
+            DrawListHolder cachedBuffer = entry.getValue();
 
-            for (var bufferEntry : cachedBuffer.getGpuBuffers().entrySet()) {
+            for (var bufferEntry : cachedBuffer.getLists().entrySet()) {
                 String key = bufferEntry.getKey();
                 if (!cachedBuffer.isValid(key)) {
                     continue;
@@ -118,8 +118,8 @@ public class LightyRenderer {
                     }
 
                     if (Compute.cachedBuffers.containsKey(chunkSection)) {
-                        BufferHolder cachedBuffer = Compute.cachedBuffers.get(chunkSection);
-                        for (var entry : cachedBuffer.getGpuBuffers().entrySet()) {
+                        DrawListHolder cachedBuffer = Compute.cachedBuffers.get(chunkSection);
+                        for (var entry : cachedBuffer.getLists().entrySet()) {
                             String key = entry.getKey();
                             if (!cachedBuffer.isValid(key)) {
                                 continue;
@@ -144,8 +144,8 @@ public class LightyRenderer {
         for (var sections : minecraft.levelRenderer.getVisibleSections()) {
             var chunkSection = SectionPos.of(sections.getRenderOrigin());
             if (Compute.cachedBuffers.containsKey(chunkSection)) {
-                BufferHolder cachedBuffer = Compute.cachedBuffers.get(chunkSection);
-                for (var entry : cachedBuffer.getGpuBuffers().entrySet()) {
+                DrawListHolder cachedBuffer = Compute.cachedBuffers.get(chunkSection);
+                for (var entry : cachedBuffer.getLists().entrySet()) {
                     String key = entry.getKey();
                     if (!cachedBuffer.isValid(key)) {
                         continue;

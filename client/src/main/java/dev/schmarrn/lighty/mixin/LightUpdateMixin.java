@@ -15,6 +15,7 @@
 package dev.schmarrn.lighty.mixin;
 
 import dev.schmarrn.lighty.core.Compute;
+import dev.schmarrn.lighty.core.SubChunkPositionHelper;
 import net.minecraft.client.multiplayer.ClientChunkCache;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.LightLayer;
@@ -26,8 +27,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ClientChunkCache.class)
 public class LightUpdateMixin {
     @Inject(method = "onLightUpdate", at = @At("TAIL"))
-    private void lighty$onBlockUpdate(LightLayer lightLayer, SectionPos sectionPos, CallbackInfo ci) {
-        Compute.updateSection(sectionPos);
+    private void lighty$onBlockUpdate(LightLayer lightLayer, SubChunkPositionHelper subChunk, CallbackInfo ci) {
+        Compute.updateSection(subChunk);
     }
 
     @Inject(method = "updateViewRadius", at = @At("TAIL"))

@@ -14,21 +14,22 @@
 
 package dev.schmarrn.lighty.core;
 
+import com.mojang.blaze3d.platform.MemoryTracker;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.schmarrn.lighty.api.OverlayData;
 import dev.schmarrn.lighty.api.OverlayDataProvider;
 import dev.schmarrn.lighty.api.OverlayRenderer;
 import dev.schmarrn.lighty.config.Config;
+import dev.schmarrn.lighty.mixin.accessors.MinecraftInstanceAccessor;
 import dev.schmarrn.lighty.overlaystate.SMACH;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.SectionPos;
-import net.minecraft.core.Vec3i;
-import net.minecraft.world.level.ChunkPos;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.World;
+import org.lwjgl.opengl.GL11;
 
 import java.util.*;
 
@@ -37,73 +38,77 @@ public class Compute {
     /// Used to clean up cachedBuffers that are out of range.
     /// Used to prioritize closer chunks when computing the overlay.
     /// Updated each tick.
-    private static SectionPos playerPos = SectionPos.of(0,0,0);
+    private static SubChunkPositionHelper playerPos = new SubChunkPositionHelper(0, 0, 0);
 
     /// Cache of all computed GpuBuffers and so on.
     /// Gets used in LightyRenderer.
-    static final Map<SectionPos, BufferHolder> cachedBuffers = new HashMap<>();
+    static final Map<SubChunkPositionHelper, DrawListHolder> cachedBuffers = new HashMap<>();
 
     /// TreeSet used to create a priority hierarchy, while still
     /// avoiding duplicate entries.
-    private static final TreeSet<SectionPos> toBeUpdated = new TreeSet<>(
+    private static final TreeSet<SubChunkPositionHelper> toBeUpdated = new TreeSet<>(
             Comparator.comparingDouble(self -> {
-                // As a distance measure, the manhattan distance is used,
+                // As a distance measure, the taxicab distance is used,
                 // additionally with a tie_breaker term based on the long-representation
                 // of the section pos in question
-                int manhattanDistance = self.distManhattan(playerPos);
-                double tieBreaker = (double)self.asLong() / (double)Long.MAX_VALUE;
-                return manhattanDistance + tieBreaker;
+                int taxicabDistance = self.getTaxicabDistance(playerPos);
+                double tieBreaker = (double)self.packIntoLong() / (double)Long.MIN_VALUE;
+                return taxicabDistance + tieBreaker;
             })
     );
 
-    static int computationDistance = Math.min(Config.OVERLAY_DISTANCE.getValue(), Minecraft.getInstance().options.renderDistance().get() + 1);
+    static int computationDistance;
+    static {
+        setComputationDistance();
+    }
 
-    private static boolean outOfRange(SectionPos sPos) {
+    private static boolean outOfRange(SubChunkPositionHelper subChunk) {
         // squared X and Z
-        int absX = Math.abs(sPos.x() - playerPos.x());
-        int absZ =  Math.abs(sPos.z() - playerPos.z());
+        int absX = Math.abs(subChunk.x - playerPos.x);
+        int absZ =  Math.abs(subChunk.z - playerPos.z);
 
         return absX > computationDistance || absZ > computationDistance;
     }
 
     public static void clear() {
         toBeUpdated.clear();
-        cachedBuffers.forEach((sectionPos, vertexBuffer) -> {
+        cachedBuffers.forEach((subChunk, vertexBuffer) -> {
             // Important to avoid a Memory leak!
             vertexBuffer.close();
         });
         cachedBuffers.clear();
-        computationDistance = Math.min(Config.OVERLAY_DISTANCE.getValue(), Minecraft.getInstance().options.renderDistance().get() + 1);
+        setComputationDistance();
     }
 
     public static void updateBlockPos(BlockPos pos) {
-        SectionPos sPos = SectionPos.of(pos);
-        if (sPos.minBlockY() == pos.getY()) {
+        SubChunkPositionHelper subChunk = SubChunkPositionHelper.fromBlockPos(pos);
+        if (subChunk.getBlockPos().y == pos.y) {
             // if we are on the y-border of a SubChunk, we need to update *both* SubChunks
             // see https://github.com/SchmarrnDevs/Lighty/issues/70
-            updateSection(sPos.offset(0, -1, 0));
+            updateSection(subChunk.offset(0, -1, 0));
         }
-        updateSection(sPos);
+        updateSection(subChunk);
     }
 
-    public static void updateSection(SectionPos sPos) {
-        if (outOfRange(sPos)) {
+    public static void updateSection(SubChunkPositionHelper subChunk) {
+        if (outOfRange(subChunk)) {
             return;
         }
 
-        toBeUpdated.add(sPos);
+        toBeUpdated.add(subChunk);
     }
 
-    private static BufferHolder buildChunk(OverlayRenderer renderer, List<OverlayDataProvider> dataProviders, SectionPos sPos, ClientLevel level, BufferHolder buffer) {
+    private static DrawListHolder buildChunk(OverlayRenderer renderer, List<OverlayDataProvider> dataProviders, SubChunkPositionHelper subChunk, World world, DrawListHolder buffer) {
         Map<String, List<OverlayData>> overlayData = new HashMap<>();
 
         for (int x = 0; x < 16; ++x) {
             for (int y = 0; y < 16; ++y) {
                 for (int z = 0; z < 16; ++z) {
-                    BlockPos pos = sPos.origin().offset(x, y, z);
+                    BlockPos subChunkBlockPos = subChunk.getBlockPos();
+                    BlockPos pos = new BlockPos(subChunkBlockPos.x + x, subChunkBlockPos.y + y, subChunkBlockPos.z + z);
 
                     for (var dataProvider : dataProviders) {
-                        var data = dataProvider.compute(level, pos, new Vec3i(x, y, z));
+                        var data = dataProvider.compute(world, pos, new Vec3i(x, y, z));
                         overlayData.putIfAbsent(dataProvider.getResourceLocation().toString(), new ArrayList<>());
                         if (data.valid()) {
                             overlayData.get(dataProvider.getResourceLocation().toString()).add(data);
@@ -113,18 +118,23 @@ public class Compute {
             }
         }
 
+        int overlayBrightness = Config.OVERLAY_BRIGHTNESS.getValue();
+        int lightLuminescence = (int) (world.dimension.brightnessTable[overlayBrightness] * 255);
+        int lightmap = 0xFF000000 | lightLuminescence << 16 | lightLuminescence << 8 | lightLuminescence;
         overlayData.forEach((key, dataList) -> {
-            BufferBuilder builder = BufferBuilder.INSTANCE.start(renderer.getVertexFormatMode(), renderer.getVertexFormat());
-            int overlayBrightness = Config.OVERLAY_BRIGHTNESS.getValue();
-            // the first parameter corresponds to the blockLightLevel, the second to the skyLightLevel
-            int lightmap = LightTexture.pack(overlayBrightness, overlayBrightness);
+            int list = MemoryTracker.getLists(1);
+            GL11.glNewList(list, GL11.GL_COMPILE);
+            BufferBuilder.INSTANCE.start(renderer.getDrawMode());
+            boolean builtSomething = false;
             for (var data : dataList) {
-                renderer.build(level, data.pos(), data, builder, lightmap);
+                renderer.build(world, data.pos(), data, BufferBuilder.INSTANCE, lightmap);
+                builtSomething = true;
             }
-
+            BufferBuilder.INSTANCE.end();
+            GL11.glEndList();
             // builder.build() can return null if there wasn't any data added
             // in that case, the buffer automatically gets set as invalid
-            buffer.upload(builder.build(), key);
+            buffer.upload(list, key, builtSomething);
         });
 
         return buffer;
@@ -204,12 +214,12 @@ public class Compute {
                 --ii;
                 cachedBuffers.compute(
                         sectionPos,
-                        (pos, bufferHolder) -> buildChunk(
+                        (pos, drawListHolder) -> buildChunk(
                                 renderer,
                                 dataProviders,
                                 pos,
                                 minecraft.level,
-                                bufferHolder != null ? bufferHolder : new BufferHolder()
+                                drawListHolder != null ? drawListHolder : new DrawListHolder()
                         )
                 );
             }
@@ -218,4 +228,8 @@ public class Compute {
 
 
     private Compute() {}
+
+    private static void setComputationDistance(){
+        computationDistance = Math.min(Config.OVERLAY_DISTANCE.getValue(), 256 >> MinecraftInstanceAccessor.getMinecraft().options.viewDistance);
+    }
 }
