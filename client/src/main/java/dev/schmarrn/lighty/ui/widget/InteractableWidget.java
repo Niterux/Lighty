@@ -26,8 +26,6 @@ public abstract class InteractableWidget extends GuiElement {
         this.screenHeight = screenHeight;
     }
 
-    ;
-
     abstract public void render(int x, int y);
 
     public void onMouseDown() {

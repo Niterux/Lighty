@@ -19,34 +19,26 @@ import dev.schmarrn.lighty.event.KeyBind;
 import dev.schmarrn.lighty.overlaystate.SMACH;
 import dev.schmarrn.lighty.ui.widget.InteractableWidget;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.Tooltip;
-import net.minecraft.client.gui.layouts.FrameLayout;
-import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.NotNull;
 
 public class LightyScreen extends Screen {
     private final Screen parent;
     private final boolean isInModMenu;
+    private final String title;
 
     public LightyScreen(Screen parent) {
-        super(Component.translatable("modeSwitcher.lighty.title"));
-        this.parent = parent;
-        this.isInModMenu = false;
+        this(parent, false);
     }
 
     public LightyScreen(Screen parent, boolean isInModMenu) {
-        super(Component.translatable("modeSwitcher.lighty.title"));
+        super();
+        title = "modeSwitcher.lighty.title";
         this.parent = parent;
         this.isInModMenu = isInModMenu;
     }
 
     @Override
-    protected void init() {
+    public void init() {
         GridLayout gridWidget = new GridLayout();
         gridWidget.defaultCellSetting().paddingBottom(4).alignHorizontallyCenter().alignVerticallyMiddle();
         GridLayout.RowHelper adder = gridWidget.createRowHelper(1);
@@ -80,15 +72,15 @@ public class LightyScreen extends Screen {
     }
 
     @Override
-    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-        super.render(guiGraphics, mouseX, mouseY, delta);
-        guiGraphics.drawCenteredString(this.font, this.title, this.width/2, 15, 0xFFFFFF);
+    public void render(int mouseX, int mouseY, float delta) {
+        super.render(mouseX, mouseY, delta);
+        this.drawCenteredString(this.textRenderer, this.title, this.width/2, 15, 0xFFFFFF);
     }
 
     @Override
     public void onClose() {
         assert this.minecraft != null;
-        this.minecraft.setScreen(parent);
+        this.minecraft.openScreen(parent);
     }
 
     @Override

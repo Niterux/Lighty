@@ -7,7 +7,6 @@
   "client": [
     "BlockPlacedMixin",
     "LightUpdateMixin",
-    "RenderPipelinesMixin",
     "accessors.MinecraftInstanceAccessor",
     "accessors.WorldRendererCompiledChunksAccessor"
   ],

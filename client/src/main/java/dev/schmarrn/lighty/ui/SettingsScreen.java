@@ -16,41 +16,35 @@ package dev.schmarrn.lighty.ui;
 
 import dev.schmarrn.lighty.config.Config;
 import dev.schmarrn.lighty.core.Compute;
-import net.minecraft.client.Minecraft;
+import dev.schmarrn.lighty.ui.widget.InteractableWidget;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screens.options.OptionsSubScreen;
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resource.language.I18n;
 
 public class SettingsScreen extends Screen {
     private final Screen parent;
     private final String title;
     public SettingsScreen(Screen parent) {
-        // passing null to options is fine, because it is only used in the respective OptionsSubScreens,
-        // and we don't use it here
-        //noinspection DataFlowIssue
         this.parent = parent;
         this.title = "settings.lighty.title";
     }
 
     @Override
     protected void addOptions() {
-        this.list.addBig(Config.OVERLAY_DISTANCE.createAssociatedWidget());
-        this.list.addBig(Config.OVERLAY_BRIGHTNESS.createAssociatedWidget());
+        this.list.addBig(Config.OVERLAY_DISTANCE.createAssociatedWidget(InteractableWidget.WidgetSizes.BIG));
+        this.list.addBig(Config.OVERLAY_BRIGHTNESS.createAssociatedWidget(InteractableWidget.WidgetSizes.BIG));
         this.list.addSmall(
-                Config.BLOCK_THRESHOLD.createAssociatedWidget(),
-                Config.SKY_THRESHOLD.createAssociatedWidget()
+                Config.BLOCK_THRESHOLD.createAssociatedWidget(InteractableWidget.WidgetSizes.SMALL),
+                Config.SKY_THRESHOLD.createAssociatedWidget(InteractableWidget.WidgetSizes.SMALL)
         );
-        this.list.addBig(Config.FARM_GROWTH_THRESHOLD.createAssociatedWidget());
-        this.list.addBig(Config.FARM_UPROOT_THRESHOLD.createAssociatedWidget());
+        this.list.addBig(Config.FARM_GROWTH_THRESHOLD.createAssociatedWidget(InteractableWidget.WidgetSizes.BIG));
+        this.list.addBig(Config.FARM_UPROOT_THRESHOLD.createAssociatedWidget(InteractableWidget.WidgetSizes.BIG));
         this.list.addSmall(
-                Config.SHOW_SAFE.createAssociatedWidget(),
-                Config.SHOW_SKYLIGHT_LEVEL.createAssociatedWidget()
+                Config.SHOW_SAFE.createAssociatedWidget(InteractableWidget.WidgetSizes.SMALL),
+                Config.SHOW_SKYLIGHT_LEVEL.createAssociatedWidget(InteractableWidget.WidgetSizes.SMALL)
         );
         this.list.addSmall(
-                Config.SHOULD_AUTO_ON.createAssociatedWidget(),
-                Config.CHUNKS_PER_TICK.createAssociatedWidget()
+                Config.SHOULD_AUTO_ON.createAssociatedWidget(InteractableWidget.WidgetSizes.SMALL),
+                Config.CHUNKS_PER_TICK.createAssociatedWidget(InteractableWidget.WidgetSizes.SMALL)
         );
     }
 

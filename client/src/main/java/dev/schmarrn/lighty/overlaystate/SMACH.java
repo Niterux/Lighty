@@ -3,8 +3,6 @@ package dev.schmarrn.lighty.overlaystate;
 import dev.schmarrn.lighty.config.Config;
 import dev.schmarrn.lighty.core.Compute;
 import net.minecraft.client.Minecraft;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.item.Item;
 
 public class SMACH {
     private static State state = State.OFF;
@@ -21,15 +19,11 @@ public class SMACH {
         // check whether we are holding an item defined as a valid auto_on item
         boolean holdsItem = false;
         var activationItems = Config.AUTO_ON_ITEM_LIST.getValue();
-
-        for (var rl : activationItems) {
-            Item activationItem = BuiltInRegistries.ITEM.get(rl).get().value();
-            Item mainHandItem = client.player.getMainHandItem().getItem();
-            Item offHandItem = client.player.getOffhandItem().getItem();
-
+        int mainHandItemId = client.player.getMainHandStack().itemId;
+        for (var itemId : activationItems) {
             // if we hold the activation item in our hands, set auto enabled to true.
             // if we don't, set it to false and if we aren't enabled, return early.
-            if (mainHandItem == activationItem || offHandItem == activationItem) {
+            if (mainHandItemId == itemId) {
                 holdsItem = true;
                 break;
             }
@@ -56,6 +50,11 @@ public class SMACH {
 
     }
 
+    private static void whenSwitchingToOff() {
+        // TODO: find a more elegant solution
+        Compute.clear();
+    }
+
     public static void toggle() {
         switch (state) {
             case OFF -> state = State.ON;
@@ -74,10 +73,5 @@ public class SMACH {
 
     public static boolean isEnabled() {
         return state == State.AUTO || state == State.ON;
-    }
-
-    private static void whenSwitchingToOff() {
-        // TODO: find a more elegant solution
-        Compute.clear();
     }
 }

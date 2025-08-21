@@ -1,55 +1,45 @@
 package dev.schmarrn.lighty.renderers;
 
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import dev.schmarrn.lighty.Lighty;
+import dev.schmarrn.lighty.api.ModPath;
 import dev.schmarrn.lighty.api.ModeManager;
 import dev.schmarrn.lighty.api.OverlayData;
 import dev.schmarrn.lighty.api.OverlayRenderer;
 import dev.schmarrn.lighty.config.Config;
-import dev.schmarrn.lighty.core.LightyPipelines;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
+import org.lwjgl.opengl.GL11;
 
 public class CrossRenderer implements OverlayRenderer {
-    public void build(ClientLevel level, BlockPos pos, OverlayData data, VertexConsumer builder, int lightmap) {
-        float x1 = data.rPos().getX();
-        float x2 = data.rPos().getX() + 1f;
-        float y  = data.rPos().getY() + 1.005f + data.yOffset();
-        float z1 = data.rPos().getZ();
-        float z2 = data.rPos().getZ() + 1f;
-
-        builder.addVertex(x1, y, z1).setColor(data.color()).setNormal(1f, 0f, 1f);
-        builder.addVertex(x2, y, z2).setColor(data.color()).setNormal(1f, 0f, 1f);
-        builder.addVertex(x1, y, z2).setColor(data.color()).setNormal(1f, 0f, -1f);
-        builder.addVertex(x2, y, z1).setColor(data.color()).setNormal(1f, 0f, -1f);
+    public void build(World world, BlockPos pos, OverlayData data, BufferBuilder builder, int lightmap) {
+        float x1 = data.rPos().x;
+        float x2 = data.rPos().x + 1f;
+        float y  = data.rPos().y + 1.005f + data.yOffset();
+        float z1 = data.rPos().z;
+        float z2 = data.rPos().z + 1f;
+        builder.color(data.color());
+        builder.normal(1f, 0f, 1f);
+        builder.vertex(x1, y, z1);
+        builder.vertex(x2, y, z2);
+        builder.normal(1f, 0f, -1f);
+        builder.vertex(x1, y, z2);
+        builder.vertex(x2, y, z1);
     }
 
     @Override
-    public RenderPipeline getPipeline() {
-        return LightyPipelines.LINES;
+    public int getDrawMode() {
+        return GL11.GL_LINES;
     }
 
     @Override
-    public ResourceLocation getTextureLocation() {
+    public ModPath getTextureLocation() {
         return Config.CROSS_TEXTURE.getValue();
     }
 
     @Override
-    public ResourceLocation getResourceLocation() {
-        return ResourceLocation.fromNamespaceAndPath(Lighty.MOD_ID, "renderer_cross");
-    }
-
-    @Override
-    public VertexFormat getVertexFormat() {
-        return LightyPipelines.POSITION_COLOR_NORMAL;
-    }
-
-    @Override
-    public VertexFormat.Mode getVertexFormatMode() {
-        return VertexFormat.Mode.LINES;
+    public ModPath getResourceLocation() {
+        return new ModPath(Lighty.MOD_ID, "renderer_cross");
     }
 
     public static void init() {
