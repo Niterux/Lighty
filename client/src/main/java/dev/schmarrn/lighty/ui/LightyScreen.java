@@ -14,10 +14,6 @@
 
 package dev.schmarrn.lighty.ui;
 
-import dev.schmarrn.lighty.core.RendererRegistry;
-import dev.schmarrn.lighty.event.KeyBind;
-import dev.schmarrn.lighty.overlaystate.SMACH;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 
 public class LightyScreen extends WidgetScreen {
@@ -39,7 +35,7 @@ public class LightyScreen extends WidgetScreen {
 
     @Override
     public void init() {
-        GridLayout gridWidget = new GridLayout();
+/*        GridLayout gridWidget = new GridLayout();
         gridWidget.defaultCellSetting().paddingBottom(4).alignHorizontallyCenter().alignVerticallyMiddle();
         GridLayout.RowHelper adder = gridWidget.createRowHelper(1);
 
@@ -68,7 +64,7 @@ public class LightyScreen extends WidgetScreen {
         adder.addChild(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).build(), adder.newCellSettings().paddingTop(6));
         gridWidget.arrangeElements();
         FrameLayout.alignInRectangle(gridWidget, 0, this.height / 6 - 12, this.width, this.height, 0.5f, 0f);
-        gridWidget.visitWidgets(this::addRenderableWidget);
+        gridWidget.visitWidgets(this::addRenderableWidget);*/
     }
 
     @Override

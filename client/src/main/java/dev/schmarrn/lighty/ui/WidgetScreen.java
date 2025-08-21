@@ -57,6 +57,7 @@ public abstract class WidgetScreen extends Screen {
     private void setWidgetsPositions() {
         for (int i = 0; i < widgetList.size(); i++) {
             widgetList.get(i).setWidgetPosition(applyWidgetXPosition(i), applyWidgetYPosition(i));
+            setMousePositionOnWidgets(lastMouseX, lastMouseY);
         }
     }
 

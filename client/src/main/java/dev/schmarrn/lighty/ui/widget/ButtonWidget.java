@@ -28,13 +28,17 @@ public class ButtonWidget extends InteractableWidget {
     @Override
     public void onMouseDown() {
         super.onMouseDown();
-        onClicked.onClicked();
+        if (mouseOver) {
+            this.minecraft.soundSystem.play("random.click", 1.0F, 1.0F);
+            onClicked.onClicked();
+        }
     }
 
     @Override
     public void onMouseMoved(int mouseX, int mouseY) {
         super.onMouseMoved(mouseX, mouseY);
-        renderTooltip(mouseX, mouseY, tooltip);
+        if (mouseOver)
+            renderTooltip(mouseX, mouseY, tooltip);
     }
 
     public void setMessage(String message) {

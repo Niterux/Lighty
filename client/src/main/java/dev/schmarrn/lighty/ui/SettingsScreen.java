@@ -24,7 +24,7 @@ public class SettingsScreen extends WidgetScreen {
         super("settings.lighty.title", parent);
     }
 
-    @Override
+/*    @Override
     protected void addOptions() {
         this.list.addBig(Config.OVERLAY_DISTANCE.createAssociatedWidget(InteractableWidget.WidgetSizes.BIG));
         this.list.addBig(Config.OVERLAY_BRIGHTNESS.createAssociatedWidget(InteractableWidget.WidgetSizes.BIG));
@@ -42,7 +42,7 @@ public class SettingsScreen extends WidgetScreen {
                 Config.SHOULD_AUTO_ON.createAssociatedWidget(InteractableWidget.WidgetSizes.SMALL),
                 Config.CHUNKS_PER_TICK.createAssociatedWidget(InteractableWidget.WidgetSizes.SMALL)
         );
-    }
+    }*/
 
     @Override
     public void render(int mouseX, int mouseY, float tickDelta) {

@@ -8,5 +8,6 @@ public class BooleanButtonWidget extends ButtonWidget {
     }
 
     private String getOnOff() {
+        return "";
     }
 }
