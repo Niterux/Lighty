@@ -10,6 +10,6 @@ public class ModeButtonRegister {
     static final List<ButtonWidget> BUTTONS = new ArrayList<>();
 
     public static void addButton(String message, String tooltip, ButtonWidget.ClickAction clickAction) {
-        BUTTONS.add(new ButtonWidget(InteractableWidget.WidgetSizes.SMALL,clickAction, message, tooltip));
+        BUTTONS.add(new ButtonWidget(InteractableWidget.WidgetSizes.SMALL, clickAction, message, tooltip));
     }
 }

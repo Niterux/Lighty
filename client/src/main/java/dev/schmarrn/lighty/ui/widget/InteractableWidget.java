@@ -10,6 +10,8 @@ public abstract class InteractableWidget extends GuiElement {
     protected final WidgetSizes size;
     protected final Minecraft minecraft;
     protected final TextRenderer textRenderer;
+    protected Integer xPos = null;
+    protected Integer yPos = null;
     protected int screenWidth;
     protected int screenHeight;
     protected boolean mouseOver = false;
@@ -21,12 +23,25 @@ public abstract class InteractableWidget extends GuiElement {
         this.textRenderer = minecraft.textRenderer;
     }
 
+    public Integer getxPos() {
+        return xPos;
+    }
+
+    public Integer getyPos() {
+        return yPos;
+    }
+
     public void init(int screenWidth, int screenHeight) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
     }
 
-    abstract public void render(int x, int y);
+    public void setWidgetPosition(int x, int y) {
+        xPos = x;
+        yPos = y;
+    }
+
+    abstract public void render();
 
     public void onMouseDown() {
     }

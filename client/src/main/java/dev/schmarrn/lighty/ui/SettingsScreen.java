@@ -18,14 +18,10 @@ import dev.schmarrn.lighty.config.Config;
 import dev.schmarrn.lighty.core.Compute;
 import dev.schmarrn.lighty.ui.widget.InteractableWidget;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.resource.language.I18n;
 
-public class SettingsScreen extends Screen {
-    private final Screen parent;
-    private final String title;
+public class SettingsScreen extends WidgetScreen {
     public SettingsScreen(Screen parent) {
-        this.parent = parent;
-        this.title = "settings.lighty.title";
+        super("settings.lighty.title", parent);
     }
 
     @Override
@@ -51,14 +47,22 @@ public class SettingsScreen extends Screen {
     @Override
     public void render(int mouseX, int mouseY, float tickDelta) {
         super.render(mouseX, mouseY, tickDelta);
-        this.drawCenteredString(this.textRenderer, I18n.translate(this.title), this.width / 2, 15, 0xFFFFFF);
     }
 
     @Override
     public void removed() {
         Compute.clear();
-        assert this.minecraft != null;
-        this.minecraft.openScreen(parent);
+        super.removed();
+    }
+
+    @Override
+    protected int applyWidgetXPosition(int widgetIndex) {
+        return 0;
+    }
+
+    @Override
+    protected int applyWidgetYPosition(int widgetIndex) {
+        return 0;
     }
 
     @Override

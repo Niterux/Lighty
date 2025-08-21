@@ -1,6 +1,5 @@
 package dev.schmarrn.lighty.ui.widget;
 
-import dev.schmarrn.lighty.Lighty;
 import net.minecraft.resource.language.I18n;
 
 public class ButtonWidget extends InteractableWidget {
@@ -16,14 +15,14 @@ public class ButtonWidget extends InteractableWidget {
     }
 
     @Override
-    public void render(int x, int y) {
+    public void render() {
         minecraft.textureManager.bind(minecraft.textureManager.load("/gui/gui.png"));
         int halfWidth = size.pixelWidth / 2;
-        int renderedTextY = getWidgetHeight() / 2 + y - 4;
+        int renderedTextY = getWidgetHeight() / 2 + yPos - 4;
         int buttonVCoordinate = mouseOver ? 86 : 66;
-        drawTexture(x, y, 0, buttonVCoordinate, halfWidth, 20);
-        drawTexture(x + halfWidth, y, 200 - halfWidth, buttonVCoordinate, halfWidth, 20);
-        drawCenteredString(minecraft.textRenderer, I18n.translate(message), x + halfWidth, renderedTextY, 0xFFFFFFFF);
+        drawTexture(xPos, yPos, 0, buttonVCoordinate, halfWidth, 20);
+        drawTexture(xPos + halfWidth, yPos, 200 - halfWidth, buttonVCoordinate, halfWidth, 20);
+        drawCenteredString(minecraft.textRenderer, I18n.translate(message), xPos + halfWidth, renderedTextY, 0xFFFFFFFF);
     }
 
     @Override

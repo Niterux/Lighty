@@ -17,24 +17,24 @@ package dev.schmarrn.lighty.ui;
 import dev.schmarrn.lighty.core.RendererRegistry;
 import dev.schmarrn.lighty.event.KeyBind;
 import dev.schmarrn.lighty.overlaystate.SMACH;
-import dev.schmarrn.lighty.ui.widget.InteractableWidget;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 
-public class LightyScreen extends Screen {
-    private final Screen parent;
+public class LightyScreen extends WidgetScreen {
     private final boolean isInModMenu;
-    private final String title;
 
     public LightyScreen(Screen parent) {
         this(parent, false);
     }
 
     public LightyScreen(Screen parent, boolean isInModMenu) {
-        super();
-        title = "modeSwitcher.lighty.title";
-        this.parent = parent;
+        super("modeSwitcher.lighty.title", parent);
         this.isInModMenu = isInModMenu;
+    }
+
+    @Override
+    public void render(int mouseX, int mouseY, float delta) {
+        super.render(mouseX, mouseY, delta);
     }
 
     @Override
@@ -67,20 +67,18 @@ public class LightyScreen extends Screen {
 
         adder.addChild(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).build(), adder.newCellSettings().paddingTop(6));
         gridWidget.arrangeElements();
-        FrameLayout.alignInRectangle(gridWidget, 0, this.height/6 - 12, this.width, this.height, 0.5f, 0f);
+        FrameLayout.alignInRectangle(gridWidget, 0, this.height / 6 - 12, this.width, this.height, 0.5f, 0f);
         gridWidget.visitWidgets(this::addRenderableWidget);
     }
 
     @Override
-    public void render(int mouseX, int mouseY, float delta) {
-        super.render(mouseX, mouseY, delta);
-        this.drawCenteredString(this.textRenderer, this.title, this.width/2, 15, 0xFFFFFF);
+    protected int applyWidgetXPosition(int widgetIndex) {
+        return 0;
     }
 
     @Override
-    public void onClose() {
-        assert this.minecraft != null;
-        this.minecraft.openScreen(parent);
+    protected int applyWidgetYPosition(int widgetIndex) {
+        return 0;
     }
 
     @Override
