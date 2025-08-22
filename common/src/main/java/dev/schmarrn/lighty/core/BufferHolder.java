@@ -20,25 +20,20 @@ import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.MeshData;
 import dev.schmarrn.lighty.Lighty;
+import it.unimi.dsi.fastutil.objects.*;
 import net.minecraft.client.renderer.chunk.SectionBuffers;
 
 import java.nio.ByteBuffer;
-import java.util.HashMap;
 import java.util.Map;
 
 public class BufferHolder implements AutoCloseable {
     // List because we can hold multiple gpuBuffers from different data providers
-    private final Map<String, SectionBuffers> overlayBuffers;
-    private final Map<String, Boolean> isValid;
+    private final Map<String, SectionBuffers> overlayBuffers = new Object2ObjectOpenHashMap<>();
+    private final Object2BooleanMap<String> isValid = new Object2BooleanOpenHashMap<>();
+
 
     private static final int BUFFER_TYPE_VERTEX = 40;
     private static final int BUFFER_TYPE_INDEX = 72;
-
-
-    BufferHolder() {
-        this.overlayBuffers = new HashMap<>();
-        this.isValid = new HashMap<>();
-    }
 
     boolean isValid(String key) {
         return this.isValid.getOrDefault(key, false);

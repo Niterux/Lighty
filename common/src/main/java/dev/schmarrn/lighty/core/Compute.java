@@ -16,12 +16,12 @@ package dev.schmarrn.lighty.core;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import dev.schmarrn.lighty.api.OverlayData;
 import dev.schmarrn.lighty.api.OverlayDataProvider;
 import dev.schmarrn.lighty.api.OverlayRenderer;
 import dev.schmarrn.lighty.config.Config;
 import dev.schmarrn.lighty.overlaystate.SMACH;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LightTexture;
@@ -41,7 +41,7 @@ public class Compute {
 
     /// Cache of all computed GpuBuffers and so on.
     /// Gets used in LightyRenderer.
-    static final Map<SectionPos, BufferHolder> cachedBuffers = new HashMap<>();
+    static final Map<SectionPos, BufferHolder> cachedBuffers = new Object2ObjectOpenHashMap<>();
 
     /// TreeSet used to create a priority hierarchy, while still
     /// avoiding duplicate entries.
@@ -95,7 +95,7 @@ public class Compute {
     }
 
     private static BufferHolder buildChunk(OverlayRenderer renderer, List<OverlayDataProvider> dataProviders, SectionPos sPos, ClientLevel level, BufferHolder buffer) {
-        Map<String, List<OverlayData>> overlayData = new HashMap<>();
+        Map<String, List<OverlayData>> overlayData = new Object2ObjectOpenHashMap<>();
 
         for (int x = 0; x < 16; ++x) {
             for (int y = 0; y < 16; ++y) {
@@ -104,10 +104,12 @@ public class Compute {
 
                     for (var dataProvider : dataProviders) {
                         var data = dataProvider.compute(level, pos, new Vec3i(x, y, z));
-                        overlayData.putIfAbsent(dataProvider.getResourceLocation().toString(), new ArrayList<>());
-                        if (data.valid()) {
-                            overlayData.get(dataProvider.getResourceLocation().toString()).add(data);
-                        }
+                        if (!data.valid())
+                            continue;
+                        var defaultList = new ArrayList<OverlayData>();
+                        var dataList = overlayData.putIfAbsent(dataProvider.getResourceLocation().toString(), defaultList);
+                        if (dataList == null) dataList = defaultList;
+                        dataList.add(data);
                     }
                 }
             }

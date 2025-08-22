@@ -21,7 +21,6 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
-import org.joml.Matrix4fStack;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
@@ -141,18 +140,19 @@ public class LightyRenderer {
 
     private static int goThroughVisibleSections(Minecraft minecraft, Camera camera, Vec3 camPos, Frustum frustum, List<RenderPass.Draw<GpuBufferSlice[]>> drawList, List<DynamicUniforms.Transform> transforms) {
         int biggestBufferSize = 0;
-        for (var sections : minecraft.levelRenderer.getVisibleSections()) {
-            var chunkSection = SectionPos.of(sections.getRenderOrigin());
-            if (Compute.cachedBuffers.containsKey(chunkSection)) {
-                BufferHolder cachedBuffer = Compute.cachedBuffers.get(chunkSection);
-                for (var entry : cachedBuffer.getGpuBuffers().entrySet()) {
-                    String key = entry.getKey();
-                    if (!cachedBuffer.isValid(key)) {
-                        continue;
-                    }
-                    // Only continue if the buffer is valid
-                    biggestBufferSize = addData(chunkSection, entry.getValue(), camPos, biggestBufferSize, drawList, transforms);
+        for (var section : minecraft.levelRenderer.getVisibleSections()) {
+            SectionPos sectionPos = SectionPos.of(section.getSectionNode());
+            BufferHolder cachedBuffer = Compute.cachedBuffers.get(sectionPos);
+            if (cachedBuffer == null)
+                continue;
+            for (var entry : cachedBuffer.getGpuBuffers().entrySet()) {
+                String key = entry.getKey();
+                if (!cachedBuffer.isValid(key)) {
+                    continue;
                 }
+
+                // Only continue if the buffer is valid
+                biggestBufferSize = addData(sectionPos, entry.getValue(), camPos, biggestBufferSize, drawList, transforms);
             }
         }
         return biggestBufferSize;
@@ -171,7 +171,7 @@ public class LightyRenderer {
 
         // tracking the biggest *vertex* buffer, in case our data didn't return an *index* buffer as well
         // See LevelRenderer#renderSectionLayer (1.21.5) for the place of inspiration
-        int biggestBufferSize = goThroughEachSection(minecraft, camera, camPos, frustum, drawList, transforms);
+        int biggestBufferSize = goThroughVisibleSections(minecraft, camera, camPos, frustum, drawList, transforms);
 
         GpuBufferSlice[] dynamicTransforms = RenderSystem.getDynamicUniforms().writeTransforms(transforms.toArray(new DynamicUniforms.Transform[0]));
         return new Data(drawList, biggestBufferSize, dynamicTransforms);
