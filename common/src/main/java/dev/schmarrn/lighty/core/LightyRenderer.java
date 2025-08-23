@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.DynamicUniforms;
 import net.minecraft.client.renderer.chunk.SectionBuffers;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.core.SectionPos;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -85,7 +86,7 @@ public class LightyRenderer {
             BufferHolder cachedBuffer = entry.getValue();
 
             for (var bufferEntry : cachedBuffer.getGpuBuffers().entrySet()) {
-                String key = bufferEntry.getKey();
+                ResourceLocation key = bufferEntry.getKey();
                 if (!cachedBuffer.isValid(key)) {
                     continue;
                 }
@@ -115,22 +116,21 @@ public class LightyRenderer {
                         // Don't bother doing anything if the chunk isn't rendered yet
                         continue;
                     }
-
-                    if (Compute.cachedBuffers.containsKey(chunkSection)) {
-                        BufferHolder cachedBuffer = Compute.cachedBuffers.get(chunkSection);
-                        for (var entry : cachedBuffer.getGpuBuffers().entrySet()) {
-                            String key = entry.getKey();
-                            if (!cachedBuffer.isValid(key)) {
-                                continue;
-                            }
-                            if (!frustum.isVisible(
-                                    AABB.encapsulatingFullBlocks(chunkSection.origin().offset(-1, -1, -1), chunkSection.origin().offset(16, 16, 16))
-                            )) {
-                                continue;
-                            }
-                            // Only continue if the buffer is valid
-                            biggestBufferSize = addData(chunkSection, entry.getValue(), camPos, biggestBufferSize, drawList, transforms);
+                    BufferHolder cachedBuffer = Compute.cachedBuffers.get(chunkSection);
+                    if (cachedBuffer == null)
+                        continue;
+                    for (var entry : cachedBuffer.getGpuBuffers().entrySet()) {
+                        ResourceLocation key = entry.getKey();
+                        if (!cachedBuffer.isValid(key)) {
+                            continue;
                         }
+                        if (!frustum.isVisible(
+                                AABB.encapsulatingFullBlocks(chunkSection.origin().offset(-1, -1, -1), chunkSection.origin().offset(16, 16, 16))
+                        )) {
+                            continue;
+                        }
+                        // Only continue if the buffer is valid
+                        biggestBufferSize = addData(chunkSection, entry.getValue(), camPos, biggestBufferSize, drawList, transforms);
                     }
                 }
             }
@@ -146,7 +146,7 @@ public class LightyRenderer {
             if (cachedBuffer == null)
                 continue;
             for (var entry : cachedBuffer.getGpuBuffers().entrySet()) {
-                String key = entry.getKey();
+                ResourceLocation key = entry.getKey();
                 if (!cachedBuffer.isValid(key)) {
                     continue;
                 }
@@ -171,7 +171,7 @@ public class LightyRenderer {
 
         // tracking the biggest *vertex* buffer, in case our data didn't return an *index* buffer as well
         // See LevelRenderer#renderSectionLayer (1.21.5) for the place of inspiration
-        int biggestBufferSize = goThroughVisibleSections(minecraft, camera, camPos, frustum, drawList, transforms);
+        int biggestBufferSize = goThroughEachSection(minecraft, camera, camPos, frustum, drawList, transforms);
 
         GpuBufferSlice[] dynamicTransforms = RenderSystem.getDynamicUniforms().writeTransforms(transforms.toArray(new DynamicUniforms.Transform[0]));
         return new Data(drawList, biggestBufferSize, dynamicTransforms);

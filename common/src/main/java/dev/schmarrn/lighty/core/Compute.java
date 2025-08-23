@@ -28,6 +28,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
 
 import java.util.*;
@@ -95,25 +96,32 @@ public class Compute {
     }
 
     private static BufferHolder buildChunk(OverlayRenderer renderer, List<OverlayDataProvider> dataProviders, SectionPos sPos, ClientLevel level, BufferHolder buffer) {
-        Map<String, List<OverlayData>> overlayData = new Object2ObjectOpenHashMap<>();
+        // Instantiation is slow, do it lazy.
+        Map<ResourceLocation, List<OverlayData>> overlayData = null;
+        BlockPos sectionOrigin = sPos.origin();
 
         for (int x = 0; x < 16; ++x) {
             for (int y = 0; y < 16; ++y) {
                 for (int z = 0; z < 16; ++z) {
-                    BlockPos pos = sPos.origin().offset(x, y, z);
+                    BlockPos pos = sectionOrigin.offset(x, y, z);
 
                     for (var dataProvider : dataProviders) {
                         var data = dataProvider.compute(level, pos, new Vec3i(x, y, z));
                         if (!data.valid())
                             continue;
                         var defaultList = new ArrayList<OverlayData>();
-                        var dataList = overlayData.putIfAbsent(dataProvider.getResourceLocation().toString(), defaultList);
+                        if (overlayData == null)
+                            overlayData = new Object2ObjectOpenHashMap<>();
+                        var dataList = overlayData.putIfAbsent(dataProvider.getResourceLocation(), defaultList);
                         if (dataList == null) dataList = defaultList;
                         dataList.add(data);
                     }
                 }
             }
         }
+
+        if (overlayData == null)
+            return buffer;
 
         overlayData.forEach((key, dataList) -> {
             BufferBuilder builder = Tesselator.getInstance().begin(renderer.getVertexFormatMode(), renderer.getVertexFormat());
@@ -123,12 +131,10 @@ public class Compute {
             for (var data : dataList) {
                 renderer.build(level, data.pos(), data, builder, lightmap);
             }
-
             // builder.build() can return null if there wasn't any data added
             // in that case, the buffer automatically gets set as invalid
             buffer.upload(builder.build(), key);
         });
-
         return buffer;
     }
 
@@ -195,26 +201,26 @@ public class Compute {
             }
 
             // as long as the section is in range...
-            if (!outOfRange(sectionPos)) {
-                // ... and the section is already compiled...
-                //if (!minecraft.levelRenderer.isSectionCompiled(sectionPos.origin())) {
-                //    // chunk data isn't ready yet, keep in queue
-                //    keepInUpdate.add(sectionPos);
-                //    continue;
-                //}
-                // ... we compute the new buffers, reduce the counter!
-                --ii;
-                cachedBuffers.compute(
-                        sectionPos,
-                        (pos, bufferHolder) -> buildChunk(
-                                renderer,
-                                dataProviders,
-                                pos,
-                                minecraft.level,
-                                bufferHolder != null ? bufferHolder : new BufferHolder()
-                        )
-                );
-            }
+            if (outOfRange(sectionPos))
+                continue;
+            // ... and the section is already compiled...
+            //if (!minecraft.levelRenderer.isSectionCompiled(sectionPos.origin())) {
+            //    // chunk data isn't ready yet, keep in queue
+            //    keepInUpdate.add(sectionPos);
+            //    continue;
+            //}
+            // ... we compute the new buffers, reduce the counter!
+            --ii;
+            cachedBuffers.compute(
+                    sectionPos,
+                    (pos, bufferHolder) -> buildChunk(
+                            renderer,
+                            dataProviders,
+                            pos,
+                            minecraft.level,
+                            bufferHolder != null ? bufferHolder : new BufferHolder()
+                    )
+            );
         }
     }
 
